@@ -18,7 +18,7 @@ class PgDbConfig(BaseSettings):
 
     pg_driver_config: PgDriverConfig = PgDriverConfig()
 
-    PG_DB_DRIVER: str = os.getenv("PG_DB_DRIVER", "asyncpg")
+    PG_MASTER_DRIVER: str = os.getenv("PG_MASTER_DRIVER", "postgresql+asyncpg")
     PG_MASTER_USER: str = os.getenv("PG_MASTER_USER", "postgres")
     PG_MASTER_PASSWORD: str = os.getenv("PG_MASTER_PASSWORD", "postgres")
     PG_MASTER_HOST: str = os.getenv("PG_MASTER_HOST", "postgres")
@@ -26,9 +26,21 @@ class PgDbConfig(BaseSettings):
     PG_MASTER_DB: str = os.getenv("PG_MASTER_DB", "postgres")
 
     @property
-    def db_sonic_master_uri(self) -> str:
+    def db_master_uri(self) -> str:
         return (
-            f"postgresql+{self.PG_DB_DRIVER}://{self.PG_MASTER_USER}:"
+            f"postgresql+{self.PG_MASTER_DRIVER}://{self.PG_MASTER_USER}:"
+            f"{self.PG_MASTER_PASSWORD}@{self.PG_MASTER_HOST}:{self.PG_MASTER_PORT}/"
+            f"{self.PG_MASTER_DB}"
+        )
+
+    @property
+    def db_master_uri_migrations(self) -> str:
+        driver = self.PG_MASTER_DRIVER
+        if driver == 'postgresql+asyncpg':
+            driver = 'psycopg2'
+
+        return (
+            f"postgresql+{driver}://{self.PG_MASTER_USER}:"
             f"{self.PG_MASTER_PASSWORD}@{self.PG_MASTER_HOST}:{self.PG_MASTER_PORT}/"
             f"{self.PG_MASTER_DB}"
         )
@@ -64,7 +76,7 @@ class Settings(BaseSettings):
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-if load_dotenv(BASE_DIR / '.env') is False:
+if load_dotenv(str(BASE_DIR / '.env')) is False:
     raise AssertionError(f"File .env not found, search directory: {BASE_DIR / '.env'}")
 
 settings = Settings()

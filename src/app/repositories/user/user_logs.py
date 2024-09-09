@@ -28,6 +28,8 @@ class UserLogsRepository(SQLAlchemyRepo):
             json_request=request_dict,
             json_response=response_dict,
         )
-        logger.debug(f"Try add user log to db: {user_log}")
-        self.session.add(user_log)
-        await self.session.flush()
+
+        async with self.session as session:
+
+            await session.add(user_log)
+            await session.flush()

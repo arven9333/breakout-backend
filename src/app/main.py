@@ -12,6 +12,8 @@ from fastapi.responses import ORJSONResponse
 
 from _logging.base import setup_logging
 from routers.base import setup_routers
+from routers.middlewares.base import setup_middlewares
+
 from settings import Settings, ApiConfig, settings
 
 
@@ -38,6 +40,7 @@ def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(**app_settings)
     app.state.settings = settings
     setup_routers(app=app, app_root=settings.api_config.API_ROOT)
+    setup_middlewares(app)
 
     return app
 
@@ -53,7 +56,7 @@ async def run_app(app: FastAPI, api_config: ApiConfig) -> None:
         port=api_config.BACK_PORT,
         workers=api_config.UVICORN_WORKERS_COUNT,
         log_level=api_config.UVICORN_LOG_LEVEL.lower(),
-        log_config=None,
+        #log_config=None,
         reload=api_config.UVICORN_RELOAD,
     )
 

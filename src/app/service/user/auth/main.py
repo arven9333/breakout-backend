@@ -24,7 +24,6 @@ class AuthService(AuthServiceABC):
     def verify_auth_token(
             self,
             authorization_token: str,
-            token_type: str = ""
     ) -> Optional[AuthToken]:
         if not authorization_token:
             raise NoAuthToken(details="No auth token")
@@ -32,7 +31,7 @@ class AuthService(AuthServiceABC):
             authorization_token
         )
 
-    def create_jwt_token(self, user_id: int, sonic_core_token: str) -> str:
+    def create_jwt_token(self, user_id: int, email: str) -> str:
         return CreateToken(jwt_pub_key=self.jwt_pub_key, jwt_pri_key=self.jwt_pri_key)(
-            user_id, sonic_core_token
+            user_id, email
         )

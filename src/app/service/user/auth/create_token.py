@@ -27,5 +27,5 @@ class CreateToken(AuthBaseUseCase):
                                )
         except ValueError as exc:
             logger.error("Encode error... %s", exc)
-            raise JWTEncodeError("Can not create jwt token") from exc
+            raise JWTEncodeError(details="Can not create jwt token") from exc
         return token

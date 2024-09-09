@@ -13,7 +13,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from connectors.connectors_name import ConnectorsName
 
-from application.services.auth import AuthService
+from service.user.auth.main import AuthService
 from exceptions.auth import (
     JWTDecodeError,
     InvalidTokenData,
@@ -146,7 +146,7 @@ class LoggingRoute:
             logger.error("Auth error: %s", exc)
 
         url_path = request.url.path
-        if not user_id and (url_path.endswith('login') or url_path.endswith('registration')):
+        if not user_id and (url_path.endswith('login') or url_path.endswith('service')):
             user_id = response_dict.get("item", {}).get("id", 0)
 
         return user_id

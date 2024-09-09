@@ -1,6 +1,6 @@
 import orjson
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from connectors_name.base import DatabaseSettings
+from connectors.base import DatabaseSettings
 from settings import Settings
 
 
@@ -13,7 +13,7 @@ class DatabaseConnector:
     def __init__(self, settings: Settings):
         config = settings.pg_db_config
         master_db_settings = DatabaseSettings(
-            plugin=config.PG_MASTER_PLUGIN,
+            driver=config.PG_MASTER_DRIVER,
             user=config.PG_MASTER_USER,
             password=config.PG_MASTER_PASSWORD,
             host=config.PG_MASTER_HOST,
@@ -25,7 +25,6 @@ class DatabaseConnector:
             master_db_settings.get_dsn(),
             json_serializer=orjson_dumps,
             json_deserializer=orjson.loads,
-            connect_args={'prepare_threshold': None},
         )
 
         self.master_session = async_sessionmaker(__master_engine)

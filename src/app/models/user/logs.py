@@ -14,9 +14,7 @@ from models.user.base import User
 
 
 class UserLogs(BaseModel):
-
     __tablename__ = "logs"
-    __table_args__ = ({"schema": "user"},)
 
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False, comment="id лога")
     ip_address: Mapped[str] = Column(INET, nullable=False, comment="ip адрес")

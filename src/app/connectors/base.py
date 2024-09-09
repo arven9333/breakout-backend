@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DatabaseSettings:
-    plugin: str
+    driver: str
     user: str
     password: str
     host: str
@@ -11,4 +11,4 @@ class DatabaseSettings:
     name: str
 
     def get_dsn(self):
-        return f"{self.plugin}://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"

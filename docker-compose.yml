@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:12
+    container_name: db_tarkov
+    ports:
+      - 5432:5432
+    networks:
+      default:
+    env_file:
+      - ./.env
+
+    environment:
+      POSTGRES_DB: ${PG_MASTER_DB:-postgres}
+      POSTGRES_USER: ${PG_MASTER_USER:-postgres}
+      POSTGRES_PASSWORD: ${PG_MASTER_PASSWORD:-postgres}

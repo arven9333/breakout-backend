@@ -7,4 +7,5 @@ metadata = MetaData()
 
 
 class BaseModel(DeclarativeBase, MappedAsDataclass):
-    ...
+    __table_args__ = {'extend_existing': True}
+

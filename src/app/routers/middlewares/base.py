@@ -11,7 +11,7 @@ from starlette.middleware.cors import CORSMiddleware
 from .process_error import (
     process_unexpected_error_middleware,
 )
-from presentation.api.middlewares.process_log_requests import LoggingRoute
+from .process_log_requests import LoggingRoute
 from settings import settings
 
 logger = logging.getLogger(__name__)
