@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 120
+
+ignore =
+    B008,
+    # Do not call setattr with a constant attribute value
+    B010,
+    # Possible hardcoded password
+    S105,
+    # missing trailing comma
+    C812
+
+per-file-ignores =
+    */__init__.py:
+        # imported but unused
+        F401
+        # unable to detect undefined names
+        F403
+    *tests/*: S101, C812
+

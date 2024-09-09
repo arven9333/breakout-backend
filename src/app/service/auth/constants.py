@@ -1,0 +1,2 @@
+USER_ID_KEY = "user_id"
+EXPIRATION_INTERVAL = 3 * 365
