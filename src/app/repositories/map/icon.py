@@ -5,7 +5,7 @@ from sqlalchemy import select, delete
 from _logging.base import setup_logging
 
 from repositories.base import SQLAlchemyRepo
-from models.map.icon import Icon, IconCategory
+from models.maps.icons import Icon, IconCategory
 from dto.request.map.icon import IconCreateDTO, IconCategoryCreateDTO
 from dto.response.map.icon import IconDTO, IconCategoryDTO
 
@@ -28,7 +28,7 @@ class IconServiceRepository(SQLAlchemyRepo):
 
             return IconDTO.from_db_model(icon)
 
-    async def add_icon_category(self, icon_category_create_dto) -> IconCategoryDTO | None:
+    async def add_icon_category(self, icon_category_create_dto: IconCategoryCreateDTO) -> IconCategoryDTO | None:
         icon_category = Icon(
             **icon_category_create_dto.as_dict()
         )
