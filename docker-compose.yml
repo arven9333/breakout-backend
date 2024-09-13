@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:12
-    container_name: db_tarkov
+    container_name: db_tarkov_fixed
     ports:
       - 5432:5432
     networks:

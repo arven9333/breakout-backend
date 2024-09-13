@@ -75,6 +75,10 @@ class Settings(BaseSettings):
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+SRC_DIR = BASE_DIR / 'src'
+IMAGES_DIR = SRC_DIR / 'images'
+ICONS_DIR = IMAGES_DIR / 'icons'
+MAPS_DIR = IMAGES_DIR / 'maps'
 
 if load_dotenv(str(BASE_DIR / '.env')) is False:
     raise AssertionError(f"File .env not found, search directory: {BASE_DIR / '.env'}")
