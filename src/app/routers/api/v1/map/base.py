@@ -59,3 +59,39 @@ async def _create_map_layer(
     )
 
     return map_layer
+
+
+@router.delete('/delete')
+async def _delete_map(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+        map_id: int,
+):
+    await map_service.delete_map(map_id)
+    return {
+        "success": 1
+    }
+
+
+@router.delete('/mapLevel/delete')
+async def _delete_map_level(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+        map_level_id: int,
+):
+    await map_service.delete_map_level(map_level_id)
+    return {
+        "success": 1
+    }
+
+
+@router.delete('/mapLayer/delete')
+async def _delete_map_layer(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+        map_layer_id: int,
+):
+    await map_service.delete_map_layer(map_layer_id)
+    return {
+        "success": 1
+    }
