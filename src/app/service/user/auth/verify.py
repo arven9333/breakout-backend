@@ -34,7 +34,7 @@ class VerifyToken(AuthBaseUseCase):
                 algorithms=self.algorithms,
                 options={
                     "verify_signature": True,
-                    "require": ["exp", "sub", ],
+                    "require": ["exp", "sub", 'user_id'],
                 }
             )
         except (ValueError,

@@ -67,7 +67,7 @@ class RedisConfig(BaseSettings):
 
 class Settings(BaseSettings):
     DEBUG: bool = False
-    ENABLE_LOG_REQUESTS: bool = True
+    ENABLE_LOG_REQUESTS: bool = False
     JWT_SECRET_KEY: str = hashlib.sha256(b"secret key").hexdigest()
 
     api_config: ApiConfig = ApiConfig()

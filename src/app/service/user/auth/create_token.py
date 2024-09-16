@@ -16,7 +16,7 @@ class CreateToken(AuthBaseUseCase):
     def __call__(self, user_id: int, email: str) -> str:
         payload = {
             USER_ID_KEY: str(user_id),
-            "email": email,
+            "sub": email,
             'exp': (datetime.datetime.utcnow() + datetime.timedelta(days=EXPIRATION_INTERVAL)).timestamp(),
         }
 

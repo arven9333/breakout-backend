@@ -40,10 +40,10 @@ async def _delete_icon(
 async def _create_icon(
         user_id: USER_ID_DEP,
         icon_service: ICON_SERVICE_DEP,
-        icon_scheme: IconCreateScheme,
+        icon_scheme: IconCreateScheme = Depends(),
         file: UploadFile = File(...),
 ):
-    image = await icon_service.upload_icon(file)
+    image = await icon_service.upload_icon(file, category_id=icon_scheme.category_id)
     icon = await icon_service.add_icon(
         IconCreateDTO(
             image=image,

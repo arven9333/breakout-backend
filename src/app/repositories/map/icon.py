@@ -54,6 +54,22 @@ class IconServiceRepository(SQLAlchemyRepo):
                 return IconCategoryDTO.from_db_model(icon_category)
             return None
 
+    async def get_icon_category_by_name(self, icon_category_name: str) -> IconCategoryDTO | None:
+        query = (
+            select(
+                IconCategory
+            ).where(
+                IconCategory.name == icon_category_name
+            )
+        )
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if icon_category := result.scalar():
+                return IconCategoryDTO.from_db_model(icon_category)
+            return None
+
     async def get_icons(self) -> list[IconDTO] | None:
         query = (
             select(
@@ -81,7 +97,7 @@ class IconServiceRepository(SQLAlchemyRepo):
             result = await session.execute(query)
 
             if icon := result.scalar_one():
-                return icon
+                return IconDTO.from_db_model(icon)
             return None
 
     async def delete_icon(self, icon_id: int):

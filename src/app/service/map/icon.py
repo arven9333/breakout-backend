@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from exceptions.map import IconCategoryNotFound, IconNotFound
+from exceptions.map import IconCategoryNotFound, IconNotFound, IconCategoryAlreadyExists
 from settings import ICONS_DIR, SRC_DIR
 
 from starlette.datastructures import UploadFile
@@ -28,6 +28,10 @@ class IconService:
             self,
             icon_category_create_dto: IconCategoryCreateDTO,
     ) -> IconCategoryDTO:
+
+        exists = await self.repo.get_icon_category_by_name(icon_category_create_dto.name)
+        if exists is not None:
+            raise IconCategoryAlreadyExists(details=f"Category with this name already exists")
 
         icon_category = await self.repo.add_icon_category(icon_category_create_dto)
         return icon_category
@@ -67,6 +71,6 @@ class IconService:
         return icons
 
     @staticmethod
-    async def upload_icon(file: UploadFile, path: Path = ICONS_DIR):
-        saved_path = await upload_file(file, path)
+    async def upload_icon(file: UploadFile, category_id: int, path: Path = ICONS_DIR):
+        saved_path = await upload_file(file, path / str(category_id))
         return saved_path
