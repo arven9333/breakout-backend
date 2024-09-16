@@ -51,6 +51,8 @@ class IconCategory(BaseModel):
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
     name: Mapped[str] = Column(String(255), unique=True)
 
+    icons = relationship("Icon", back_populates="category")
+
 
 class Icon(BaseModel):
     __tablename__ = "icons"
@@ -59,6 +61,8 @@ class Icon(BaseModel):
     name: Mapped[str] = Column(String(255))
     image: Mapped[str] = Column(String(777))
     category_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(IconCategory.id))
+
+    category = relationship(IconCategory, back_populates="icons")
 
 
 class IconAbstract(BaseModel):

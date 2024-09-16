@@ -1,13 +1,14 @@
 import logging
 
 from sqlalchemy import select, delete
+from sqlalchemy.orm import joinedload
 
 from _logging.base import setup_logging
 
 from repositories.base import SQLAlchemyRepo
 from models.maps.base import Icon, IconCategory
 from dto.request.map.icon import IconCreateDTO, IconCategoryCreateDTO
-from dto.response.map.icon import IconDTO, IconCategoryDTO
+from dto.response.map.icon import IconDTO, IconCategoryDTO, CategoryGroupedIcons, IconGroupDTO
 
 logger = logging.getLogger(__name__)
 setup_logging(__name__)
@@ -70,19 +71,29 @@ class IconServiceRepository(SQLAlchemyRepo):
                 return IconCategoryDTO.from_db_model(icon_category)
             return None
 
-    async def get_icons(self) -> list[IconDTO] | None:
+    async def get_icons(self) -> list[CategoryGroupedIcons] | None:
         query = (
             select(
-                Icon
+                IconCategory
+            ).outerjoin(
+                IconCategory.icons
+            ).options(
+                joinedload(IconCategory.icons)
             )
         )
         async with self.session as session:
             result = await session.execute(query)
 
-            if icons := result.scalars().all():
+            if categories := result.unique().scalars().all():
                 return [
-                    IconDTO.from_db_model(icon)
-                    for icon in icons
+                    CategoryGroupedIcons(
+                        category=IconCategoryDTO.from_db_model(category),
+                        icons=[
+                            IconGroupDTO.from_db_model(icon)
+                            for icon in category.icons
+                        ]
+                    )
+                    for category in categories
                 ]
             return None
 

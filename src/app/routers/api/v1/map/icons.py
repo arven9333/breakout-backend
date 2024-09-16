@@ -1,9 +1,10 @@
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
 from scheme.request.map.icons import IconCreateScheme
-from scheme.response.map.icons import IconScheme, IconCategoryScheme
+from scheme.response.map.icons import IconScheme, IconCategoryScheme, CategoryGroupedIconsScheme, \
+    CategoryGroupedIconsResponseScheme
 from dto.request.map.icon import IconCreateDTO, IconCategoryCreateDTO
 
 from dependencies.map.icon import ICON_SERVICE_DEP
@@ -51,6 +52,17 @@ async def _create_icon(
         )
     )
     return icon
+
+
+@router.post('/list', response_model=CategoryGroupedIconsResponseScheme)
+async def _create_icon(
+        user_id: USER_ID_DEP,
+        icon_service: ICON_SERVICE_DEP,
+):
+    icons_grouped = await icon_service.get_icons()
+    return {
+        "data": icons_grouped
+    }
 
 
 @router.delete('/delete')

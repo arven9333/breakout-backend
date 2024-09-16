@@ -7,7 +7,7 @@ from settings import ICONS_DIR, SRC_DIR
 from starlette.datastructures import UploadFile
 
 from dto.request.map.icon import IconCategoryCreateDTO, IconCreateDTO
-from dto.response.map.icon import IconCategoryDTO, IconDTO
+from dto.response.map.icon import IconCategoryDTO, IconDTO, CategoryGroupedIcons
 from repositories.map.icon import IconServiceRepository
 from utils.file_operations import upload_file, delete_file
 
@@ -66,7 +66,7 @@ class IconService:
 
         return icon
 
-    async def get_icons(self) -> list[IconDTO]:
+    async def get_icons(self) -> list[CategoryGroupedIcons]:
         icons = await self.repo.get_icons()
         return icons
 

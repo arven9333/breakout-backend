@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dto.base import DTO
 from dataclasses import dataclass
 from models.maps.base import Icon, IconCategory
@@ -31,3 +33,22 @@ class IconDTO(DTO):
             image=icon.image,
             category_id=icon.category_id
         )
+
+
+@dataclass
+class IconGroupDTO(DTO):
+    id: int
+    name: str
+    image: str
+
+    @classmethod
+    def from_db_model(cls, icon: Icon):
+        return cls(
+            id=icon.id,
+            name=icon.name,
+            image=icon.image,
+        )
+@dataclass
+class CategoryGroupedIcons(DTO):
+    category: IconCategoryDTO
+    icons: Optional[list[IconGroupDTO]]
