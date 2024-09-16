@@ -61,11 +61,5 @@ class MapService:
             await delete_file(MAPS_DIR / str(map['id']))
             await self.repo.delete_map(map_id)
 
-    async def handle_actions(self, actions: list[ActionScheme]):
-        for action in actions:
-            if action.type.value == 'icon_metric_layer':
-                match action.action.value:
-                    case 'create':
-                        pass
-                    case 'update':
-                        pass
+    async def get_metrics(self):
+        return await self.repo.get_metrics()

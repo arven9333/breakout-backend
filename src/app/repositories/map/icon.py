@@ -164,7 +164,7 @@ class IconLayerServiceRepository(SQLAlchemyRepo):
         query = delete(
             IconMetricLayer
         ).where(
-            id=icon_layer_id
+            IconMetricLayer.id == icon_layer_id
         )
 
         async with self.session as session:
@@ -225,7 +225,7 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
         query = delete(
             IconMetricLevel
         ).where(
-            id=icon_level_id
+            IconMetricLevel.id == icon_level_id,
         )
 
         async with self.session as session:

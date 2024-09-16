@@ -163,15 +163,15 @@ class ActionsHandleService:
             service = None
 
             action_type = action.action.value
-            action_model = action.model.value
+            action_model = action.type.value
 
-            if action_model.model == "icon_metric_layer":
+            if action_model == "icon_metric_layer":
                 service = self.icon_layer_service
             elif action_model == "icon_metric_level":
                 service = self.icon_level_service
 
             if service:
-                data = action.data.model_dump()
+                data = action.data
                 match action_type:
                     case "create":
                         await service.add_icon(

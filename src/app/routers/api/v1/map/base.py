@@ -99,13 +99,23 @@ async def _delete_map_layer(
     }
 
 
+@router.get('/allMetrics')
+async def _get_all_metrics(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+):
+    data = await map_service.get_metrics()
+
+    return data
+
+
 @router.post('/actions/save')
 async def _save_actions(
         user_id: USER_ID_DEP,
-        map_service: ICON_ACTIONS_SERVICE_DEP,
+        icon_actions_service: ICON_ACTIONS_SERVICE_DEP,
         actions: list[ActionScheme],
 ):
-    await map_service.handle_actions(actions)
+    await icon_actions_service.handle_actions(actions)
 
     return {
         "success": 1

@@ -7,7 +7,7 @@ class IconMetricBase(BaseModel):
     coord_y: float
 
 
-class IconMetricBaseCreate(BaseModel):
+class IconMetricBaseCreate(IconMetricBase):
     icon_id: int
 
 
@@ -38,14 +38,7 @@ class IconMapLayerDeleteScheme(IconMapLayerUpdateScheme):
 class ActionScheme(BaseModel):
     action: ActionEnum
     type: ModelEnum
-    data: (
-            IconMapLevelCreateScheme |
-            IconMapLayerCreateScheme |
-            IconMapLevelUpdateScheme |
-            IconMapLayerUpdateScheme |
-            IconMapLevelDeleteScheme |
-            IconMapLayerDeleteScheme
-    )
+    data: dict
     model_config = {
         "json_schema_extra": {
             "examples": [

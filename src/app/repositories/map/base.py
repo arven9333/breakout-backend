@@ -1,4 +1,7 @@
 import logging
+
+from sqlalchemy.orm import joinedload
+
 from settings import MAPS_DIR, SRC_DIR
 from sqlalchemy import select, delete
 
@@ -194,3 +197,62 @@ class MapServiceRepository(SQLAlchemyRepo):
         async with self.session as session:
             await session.execute(query)
             await session.flush()
+
+    async def get_metrics(self):
+        query = select(
+            Map
+        ).select_from(
+            MapLevel
+        ).outerjoin(
+            MapLevel.map
+        ).outerjoin(
+            MapLevel.map_layers
+        ).options(
+            joinedload(Map.map_levels).joinedload(MapLevel.metrics),
+            joinedload(Map.map_levels).joinedload(MapLevel.map_layers).joinedload(MapLayer.metrics)
+        )
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            maps = result.unique().scalars().all()
+
+            return [
+                {
+                    "id": map.id,
+                    "name": map.name,
+                    "map_levels": [
+                        {
+                            "id": map_level.id,
+                            "level": map_level.level.value,
+                            "metrics": [
+                                {
+                                    "id": level_metric.id,
+                                    "coord_x": level_metric.coord_x,
+                                    "coord_y": level_metric.coord_y,
+                                    "map_level_id": map_level.id,
+                                }
+                                for level_metric in map_level.metrics
+                            ],
+                            "layers": [
+                                {
+                                    "id": layer.id,
+                                    "metrics": [
+                                        {
+                                            "id": metric.id,
+                                            "coord_x": metric.coord_x,
+                                            "coord_y": metric.coord_y,
+                                            "map_layer_id": layer.id
+                                        }
+                                        for metric in layer.metrics
+                                    ]
+                                }
+                                for layer in map_level.map_layers
+                            ]
+                        }
+                        for map_level in map.map_levels
+                    ]
+                }
+                for map in maps
+            ]
+            return data
