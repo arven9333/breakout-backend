@@ -151,14 +151,16 @@ class MapServiceRepository(SQLAlchemyRepo):
             await session.add(map_layer)
             await session.flush()
 
-            return {
+            temp = {
                 "id": map_layer.id,
-                "map_level_id": map_layer.map_level_id,
-                "leaflet_path": await self.get_map_layer_leaflet_path(
-                    map_level_id=map_level_id,
-                    map_layer_id=map_layer.id
-                )
+                "map_level_id": map_layer.map_level_id
             }
+
+        return temp | {
+            "leaflet_path": await self.get_map_layer_leaflet_path(
+                map_level_id=temp['map_level_id'],
+                map_layer_id=temp['id']
+            )}
 
     async def get_map_layer_by_id(self, map_layer_id: int):
 
