@@ -1,4 +1,5 @@
 from exceptions.map import MapLevelAlreadyExists
+from scheme.request.map.base import ActionScheme
 from settings import SRC_DIR, MAPS_DIR
 from dataclasses import dataclass
 from enums.map import MapLevelEnum
@@ -59,3 +60,12 @@ class MapService:
         if map is not None:
             await delete_file(MAPS_DIR / str(map['id']))
             await self.repo.delete_map(map_id)
+
+    async def handle_actions(self, actions: list[ActionScheme]):
+        for action in actions:
+            if action.type.value == 'icon_metric_layer':
+                match action.action.value:
+                    case 'create':
+                        pass
+                    case 'update':
+                        pass

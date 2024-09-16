@@ -69,6 +69,7 @@ class IconAbstract(BaseModel):
     __abstract__ = True
 
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
+    icon_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(Icon.id))
     coord_x: Mapped[float] = Column(Float)
     coord_y: Mapped[float] = Column(Float)
 
@@ -78,6 +79,7 @@ class IconMetricLevel(IconAbstract):
 
     map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
     map_level = relationship(MapLevel, back_populates="metrics")
+    icon = relationship(Icon)
 
 
 class IconMetricLayer(IconAbstract):
@@ -85,3 +87,4 @@ class IconMetricLayer(IconAbstract):
 
     map_layer_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLayer.id))
     map_layer = relationship(MapLayer, back_populates="metrics")
+    icon = relationship(Icon)

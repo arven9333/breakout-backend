@@ -2,8 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from dependencies.map.base import MAP_SERVICE_DEP
+from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
 from dependencies.user.auth import USER_ID_DEP
 from enums.map import MapLevelEnum
+from scheme.request.map.base import ActionScheme
 from scheme.response.map.base import MapScheme, MapLevelScheme, MapLayerScheme
 
 router = APIRouter(tags=["maps.v1.service"], prefix='/service')
@@ -92,6 +94,19 @@ async def _delete_map_layer(
         map_layer_id: int,
 ):
     await map_service.delete_map_layer(map_layer_id)
+    return {
+        "success": 1
+    }
+
+
+@router.post('/actions/save')
+async def _save_actions(
+        user_id: USER_ID_DEP,
+        map_service: ICON_ACTIONS_SERVICE_DEP,
+        actions: list[ActionScheme],
+):
+    await map_service.handle_actions(actions)
+
     return {
         "success": 1
     }

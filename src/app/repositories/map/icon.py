@@ -1,12 +1,12 @@
 import logging
 
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 from sqlalchemy.orm import joinedload
 
 from _logging.base import setup_logging
 
 from repositories.base import SQLAlchemyRepo
-from models.maps.base import Icon, IconCategory
+from models.maps.base import Icon, IconCategory, IconMetricLayer, IconMetricLevel
 from dto.request.map.icon import IconCreateDTO, IconCategoryCreateDTO
 from dto.response.map.icon import IconDTO, IconCategoryDTO, CategoryGroupedIcons, IconGroupDTO
 
@@ -127,6 +127,128 @@ class IconServiceRepository(SQLAlchemyRepo):
             Icon
         ).where(
             IconCategory.id == icon_category_id
+        )
+
+        async with self.session as session:
+            await session.execute(query)
+            await session.flush()
+
+
+class IconLayerServiceRepository(SQLAlchemyRepo):
+    async def add_icon(
+            self,
+            coord_x: float,
+            coord_y: float,
+            icon_id: int,
+            map_layer_id: int
+    ):
+        icon = IconMetricLayer(
+            coord_x=coord_x,
+            coord_y=coord_y,
+            icon_id=icon_id,
+            map_layer_id=map_layer_id,
+        )
+
+        async with self.session as session:
+            await session.add(icon)
+            await session.flush()
+
+            return {
+                "id": icon.id,
+                "coord_x": icon.coord_x,
+                "coord_y": icon.coord_y,
+                "map_layer_id": icon.map_layer_id
+            }
+
+    async def delete_icon(self, icon_layer_id: int):
+        query = delete(
+            IconMetricLayer
+        ).where(
+            id=icon_layer_id
+        )
+
+        async with self.session as session:
+            await session.execute(query)
+            await session.flush()
+
+    async def update_icon(
+            self,
+            icon_layer_id: int,
+            coord_x: float,
+            coord_y: float,
+            icon_id: int,
+            map_layer_id: int,
+    ):
+        query = update(
+            IconMetricLayer
+        ).where(
+            IconMetricLayer.id == icon_layer_id
+        ).values(
+            coord_x=coord_x,
+            coord_y=coord_y,
+            icon_id=icon_id,
+            map_layer_id=map_layer_id,
+        )
+
+        async with self.session as session:
+            await session.execute(query)
+            await session.flush()
+
+
+class IconLevelServiceRepository(SQLAlchemyRepo):
+    async def add_icon(
+            self,
+            coord_x: float,
+            coord_y: float,
+            icon_id: int,
+            map_level_id: int
+    ):
+        icon = IconMetricLevel(
+            coord_x=coord_x,
+            coord_y=coord_y,
+            icon_id=icon_id,
+            map_level_id=map_level_id,
+        )
+
+        async with self.session as session:
+            await session.add(icon)
+            await session.flush()
+
+            return {
+                "id": icon.id,
+                "coord_x": icon.coord_x,
+                "coord_y": icon.coord_y,
+                "map_level_id": icon.map_level_id,
+            }
+
+    async def delete_icon(self, icon_level_id: int):
+        query = delete(
+            IconMetricLevel
+        ).where(
+            id=icon_level_id
+        )
+
+        async with self.session as session:
+            await session.execute(query)
+            await session.flush()
+
+    async def update_icon(
+            self,
+            icon_level_id: int,
+            coord_x: float,
+            coord_y: float,
+            icon_id: int,
+            map_level_id: int,
+    ):
+        query = update(
+            IconMetricLevel
+        ).where(
+            IconMetricLevel.id == icon_level_id
+        ).values(
+            coord_x=coord_x,
+            coord_y=coord_y,
+            icon_id=icon_id,
+            map_level_id=map_level_id,
         )
 
         async with self.session as session:
