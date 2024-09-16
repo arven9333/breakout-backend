@@ -12,8 +12,8 @@ AUTHORIZATION_HEADER = APIKeyHeader(name="Authorization", auto_error=False)
 
 async def get_auth_service():
     return AuthService(
-        jwt_pub_key=Settings.JWT_SECRET_KEY,
-        jwt_pri_key=Settings.JWT_SECRET_KEY
+        jwt_pub_key=Settings().JWT_SECRET_KEY,
+        jwt_pri_key=Settings().JWT_SECRET_KEY
     )
 
 

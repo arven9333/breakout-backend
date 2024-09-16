@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from dto.request.user.registration import UserCreateDTO, UserDTO
+from dto.request.user.registration import UserCreateDTO, UserDTO, UserDBDTO
 from repositories.user.user_service import UserServiceRepository
 from service.user.service.service_abc import UserServiceABC
 from exceptions.user import UserEmailAlreadyExists, UserUsernameAlreadyExists
@@ -26,3 +26,12 @@ class UserService(UserServiceABC):
 
     async def get_user_by_username(self, username: str) -> UserDTO | None:
         return await self.repo.get_user_by_username(username)
+
+    async def get_user_db_by_id(self, user_id: int) -> UserDBDTO:
+        return await self.repo.get_user_db_by_id(user_id)
+
+    async def get_user_db_by_email(self, email: str) -> UserDBDTO | None:
+        return await self.repo.get_user_db_by_email(email)
+
+    async def get_user_db_by_username(self, username: str) -> UserDBDTO | None:
+        return await self.repo.get_user_db_by_username(username)

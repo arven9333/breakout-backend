@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from models.base import BaseModel, Column
 from models.common.ts_mixin import TsMixin
 from sqlalchemy import BigInteger, String, UniqueConstraint, Boolean

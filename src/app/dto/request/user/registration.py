@@ -34,3 +34,18 @@ class UserDTO(DTO):
             username=user.username,
             is_active=user.is_active,
         )
+
+
+@dataclass
+class UserDBDTO(UserDTO):
+    password: str
+
+    @classmethod
+    def from_db_model(cls, user: User):
+        return cls(
+            id=user.id,
+            email=user.email,
+            username=user.username,
+            is_active=user.is_active,
+            password=user.password
+        )

@@ -1,6 +1,7 @@
 from typing import Optional
 import logging
 from _logging.base import setup_logging
+from passlib.hash import bcrypt
 
 from dto.response.auth import AuthToken
 from .auth_abc import AuthServiceABC
@@ -35,3 +36,8 @@ class AuthService(AuthServiceABC):
         return CreateToken(jwt_pub_key=self.jwt_pub_key, jwt_pri_key=self.jwt_pri_key)(
             user_id, email
         )
+
+    @staticmethod
+    async def verify_password(password: str, hashed_password: str) -> bool:
+        return bcrypt.verify(password, hashed_password)
+

@@ -1,6 +1,6 @@
 from dto.base import DTO
 from dataclasses import dataclass
-from models.map.base import Icon, IconCategory
+from models.maps.base import Icon, IconCategory
 
 
 @dataclass

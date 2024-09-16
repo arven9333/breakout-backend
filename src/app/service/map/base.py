@@ -1,24 +1,23 @@
-from settings import SRC_DIR, MAP_DIR
+from settings import SRC_DIR, MAPS_DIR
 from dataclasses import dataclass
 from enums.map import MapLevelEnum
 from repositories.map.base import MapServiceRepository
-from service.map.service_abc import MapServiceABC
 from service.map.icon import delete_file
 
 from utils.image_to_tiles import generate_tiles
 
 
 @dataclass
-class MapService(MapServiceABC):
+class MapService:
     repo: MapServiceRepository
 
     async def create_map(self, name: str, user_id: int) -> dict:
-        map = await self.repo.create_map(name=name, user_id=user_id)
+        map = await self.repo.add_map(name=name, user_id=user_id)
 
         return map
 
     async def create_map_level(self, stream: bytes, map_id: int, level: MapLevelEnum) -> dict:
-        map_level = await self.repo.create_map_level(
+        map_level = await self.repo.add_map_level(
             map_id=map_id,
             level=level,
         )
@@ -54,5 +53,5 @@ class MapService(MapServiceABC):
         map = await self.repo.get_map_by_id(map_id)
 
         if map is not None:
-            await delete_file(MAP_DIR / str(map['id']))
+            await delete_file(MAPS_DIR / str(map['id']))
             await self.repo.delete_map(map_id)

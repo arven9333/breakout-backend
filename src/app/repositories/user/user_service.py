@@ -6,7 +6,7 @@ from _logging.base import setup_logging
 
 from repositories.base import SQLAlchemyRepo
 from models.user import User
-from dto.request.user.registration import UserCreateDTO, UserDTO
+from dto.request.user.registration import UserCreateDTO, UserDTO, UserDBDTO
 
 logger = logging.getLogger(__name__)
 setup_logging(__name__)
@@ -71,4 +71,50 @@ class UserServiceRepository(SQLAlchemyRepo):
 
             if user := result.scalar():
                 return UserDTO.from_db_model(user)
+            return None
+
+    async def get_user_db_by_id(self, user_id: int) -> UserDBDTO | None:
+        query = select(
+            User
+        ).where(
+            User.id == user_id
+        )
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if user := result.scalar():
+                return UserDBDTO.from_db_model(user)
+            return None
+
+    async def get_user_db_by_email(self, email: str) -> UserDBDTO | None:
+        query = (
+            select(
+                User
+            ).where(
+                User.email == email
+            )
+        )
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if user := result.scalar():
+                return UserDBDTO.from_db_model(user)
+            return None
+
+    async def get_user_db_by_username(self, username: str) -> UserDBDTO | None:
+        query = (
+            select(
+                User
+            ).where(
+                User.username == username
+            )
+        )
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if user := result.scalar():
+                return UserDBDTO.from_db_model(user)
             return None
