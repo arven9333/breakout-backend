@@ -1,4 +1,5 @@
 from pathlib import Path
+from settings import SRC_DIR
 import os
 from PIL import Image
 import io
@@ -8,7 +9,9 @@ MAX_ZOOM = 5
 TILE_SIZE = 256
 
 
-def generate_tiles(stream: bytes, path: Path):
+def generate_tiles(stream: bytes, path: str):
+
+    path = SRC_DIR / path
 
     with Image.open(io.BytesIO(stream)) as orig_world_map:
         for z in range(MIN_ZOOM, MAX_ZOOM + 1):

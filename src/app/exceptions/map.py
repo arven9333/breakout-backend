@@ -11,3 +11,6 @@ class IconCategoryAlreadyExists(AppException):
 
 class IconNotFound(AppException):
     ...
+
+class MapLevelAlreadyExists(AppException):
+    ...

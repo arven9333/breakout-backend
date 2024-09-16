@@ -1,3 +1,4 @@
+from exceptions.map import MapLevelAlreadyExists
 from settings import SRC_DIR, MAPS_DIR
 from dataclasses import dataclass
 from enums.map import MapLevelEnum
@@ -17,6 +18,9 @@ class MapService:
         return map
 
     async def create_map_level(self, stream: bytes, map_id: int, level: MapLevelEnum) -> dict:
+        if await self.repo.map_level_exists(map_id, level):
+            raise MapLevelAlreadyExists(details=f"Map with level: {level.value} already exists")
+
         map_level = await self.repo.add_map_level(
             map_id=map_id,
             level=level,
