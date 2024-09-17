@@ -255,4 +255,3 @@ class MapServiceRepository(SQLAlchemyRepo):
                 }
                 for map in maps
             ]
-            return data
