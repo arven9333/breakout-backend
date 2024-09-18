@@ -18,16 +18,10 @@ setup_logging(__name__)
 class MapServiceRepository(SQLAlchemyRepo):
 
     @staticmethod
-    async def get_map_level_leaflet_path(map_id: int, level: MapLevelEnum):
+    async def get_map_layer_leaflet_path(map_id: int, map_layer_id: int):
         return str(
-            MAPS_DIR / str(map_id) / level.value / 'tiles'
-        ).split(str(SRC_DIR))[-1][1:]
-
-    async def get_map_layer_leaflet_path(self, map_level_id: int, map_layer_id: int):
-        map_level = await self.get_map_level_by_id(map_level_id)
-        return str(
-            MAPS_DIR / str(map_level['map_id']) / map_level['level'] / 'layers' / str(map_layer_id)
-        ).split(str(SRC_DIR))[-1][1:]
+            MAPS_DIR / str(map_id) / str(map_layer_id) / "tiles"
+        )
 
     async def add_map(
             self,
@@ -75,12 +69,12 @@ class MapServiceRepository(SQLAlchemyRepo):
 
     async def add_map_level(
             self,
-            map_id: int,
+            map_layer_id: int,
             level: MapLevelEnum,
     ) -> dict:
 
         map_level = MapLevel(
-            map_id=map_id,
+            map_layer_id=map_layer_id,
             level=level,
         )
         async with self.session as session:
@@ -90,80 +84,26 @@ class MapServiceRepository(SQLAlchemyRepo):
             return {
                 "id": map_level.id,
                 "level": map_level.level.value,
-                "map_id": map_level.map_id,
-                "leaflet_path": await self.get_map_level_leaflet_path(
-                    map_id=map_level.map_id,
-                    level=level
-                )
+                "map_layer_id": map_level.map_layer_id,
             }
 
-    async def map_level_exists(self, map_id: int, level: MapLevelEnum):
-        query = select(
-            MapLevel
-        ).where(
-            MapLevel.map_id == map_id,
-            MapLevel.level == level.value
-        )
-
-        async with self.session as session:
-            result = await session.execute(query)
-
-            test_ = result.scalar_one_or_none()
-
-            return test_ is not None
-
-    async def get_map_level_by_id(self, map_level_id: int):
-        query = select(
-            MapLevel
-        ).where(
-            MapLevel.id == map_level_id
-        )
-
-        async with self.session as session:
-            result = await session.execute(query)
-
-            if map_level := result.scalar_one():
-                return {
-                    "id": map_level.id,
-                    "level": map_level.level.value,
-                    "map_id": map_level.map_id,
-                    "leaflet_path": await self.get_map_level_leaflet_path(
-                        map_id=map_level.map_id,
-                        level=map_level.level
-                    )
-                }
-            return
-
-    async def delete_map_level(self, map_level_id: int):
-        query = delete(
-            MapLevel
-        ).where(
-            MapLevel.id == map_level_id
-        )
-
-        async with self.session as session:
-            await session.execute(query)
-            await session.flush()
-
-    async def create_map_layer(self, map_level_id: int):
+    async def create_map_layer(self, map_id: int):
         map_layer = MapLayer(
-            map_level_id=map_level_id
+            map_id=map_id
         )
 
         async with self.session as session:
             await session.add(map_layer)
             await session.flush()
 
-            temp = {
+            return {
                 "id": map_layer.id,
-                "map_level_id": map_layer.map_level_id
+                "map_id": map_layer.map_id,
+                "leaflet_path": await self.get_map_layer_leaflet_path(
+                    map_id=map_layer.id,
+                    map_layer_id=map_layer.id
+                )
             }
-
-        return temp | {
-            "leaflet_path": await self.get_map_layer_leaflet_path(
-                map_level_id=temp['map_level_id'],
-                map_layer_id=temp['id']
-            )}
 
     async def get_map_layer_by_id(self, map_layer_id: int):
 
@@ -179,9 +119,9 @@ class MapServiceRepository(SQLAlchemyRepo):
             if map_layer := result.scalar_one():
                 return {
                     "id": map_layer.id,
-                    "map_level_id": map_layer.map_level_id,
+                    "map_id": map_layer.map_id,
                     "leaflet_path": await self.get_map_layer_leaflet_path(
-                        map_level_id=map_layer.map_level_id,
+                        map_id=map_layer.map_id,
                         map_layer_id=map_layer.id
                     )
                 }
@@ -201,15 +141,14 @@ class MapServiceRepository(SQLAlchemyRepo):
     async def get_metrics(self):
         query = select(
             Map
-        ).select_from(
-            MapLevel
-        ).outerjoin(
-            MapLevel.map
-        ).outerjoin(
-            MapLevel.map_layers
         ).options(
-            joinedload(Map.map_levels).joinedload(MapLevel.metrics),
-            joinedload(Map.map_levels).joinedload(MapLevel.map_layers).joinedload(MapLayer.metrics)
+            joinedload(
+                Map.map_layers
+            ).joinedload(
+                MapLayer.map_levels
+            ).joinedload(
+                MapLevel.metrics
+            ),
         )
 
         async with self.session as session:

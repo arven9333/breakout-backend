@@ -25,31 +25,11 @@ async def _create_map(
     return map
 
 
-@router.post('/mapLevel/create', response_model=MapLevelScheme)
-async def _create_map_level(
-        user_id: USER_ID_DEP,
-        map_service: MAP_SERVICE_DEP,
-        map_id: int,
-        level: MapLevelEnum,
-        file: UploadFile = File(...),
-
-):
-    stream = await file.read()
-
-    map_level = await map_service.create_map_level(
-        stream=stream,
-        level=level,
-        map_id=map_id,
-    )
-
-    return map_level
-
-
 @router.post('/mapLayer/create', response_model=MapLayerScheme)
 async def _create_map_layer(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
-        map_level_id: int,
+        map_id: int,
         file: UploadFile = File(...),
 
 ):
@@ -57,7 +37,7 @@ async def _create_map_layer(
 
     map_layer = await map_service.create_map_layer(
         stream=stream,
-        map_level_id=map_level_id,
+        map_id=map_id,
     )
 
     return map_layer

@@ -29,11 +29,10 @@ class MapService:
         generate_tiles(stream, map_level['leaflet_path'])
         return map_level
 
-    async def create_map_layer(self, stream: bytes, map_level_id: int) -> dict:
+    async def create_map_layer(self, stream: bytes, map_id: int) -> dict:
 
         map_layer = await self.repo.create_map_layer(
-            map_level_id=map_level_id,
-
+            map_id=map_id,
         )
         generate_tiles(stream, map_layer['leaflet_path'])
 

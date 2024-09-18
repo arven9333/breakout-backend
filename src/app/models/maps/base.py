@@ -17,32 +17,31 @@ class Map(BaseModel):
     user_id: Mapped[int] = Column(BigInteger, RestrictForeignKey(User.id))
 
     user = relationship(User)
-    map_levels = relationship("MapLevel", back_populates="map")
+    map_layers = relationship("MapLayer", back_populates="map", uselist=True)
+
+
+class MapLayer(BaseModel):
+    __tablename__ = "map_layers"
+
+    id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
+    map_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(Map.id))
+
+    map = relationship(Map, back_populates="map_layers", uselist=False)
+    map_levels = relationship("MapLevel", back_populates="map_layer", uselist=True)
 
 
 class MapLevel(BaseModel):
     __tablename__ = 'map_levels'
     __table_args__ = (
-        UniqueConstraint(*('map_id', "level"), name='map_levels_unique'),
+        UniqueConstraint(*('map_layer_id', "level"), name='map_levels_unique'),
         {'extend_existing': True}
     )
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
-    map_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(Map.id))
+    map_layer_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLayer.id))
     level: Mapped[MapLevelEnum] = Column(Enum(MapLevelEnum))
 
-    map = relationship(Map, back_populates="map_levels")
-    map_layers = relationship("MapLayer", back_populates="map_level")
-    metrics = relationship("IconMetricLevel", back_populates="map_level")
-
-
-class MapLayer(BaseModel):
-    __tablename__ = "map_layer"
-
-    id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
-    map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
-
-    map_level = relationship(MapLevel, back_populates="map_layers")
-    metrics = relationship("IconMetricLayer", back_populates="map_layer")
+    map_layer = relationship("MapLayer", back_populates="map_levels", uselist=False)
+    metrics = relationship("IconMetricLevel", back_populates="map_level", uselist=True)
 
 
 class IconCategory(BaseModel):
@@ -51,7 +50,7 @@ class IconCategory(BaseModel):
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
     name: Mapped[str] = Column(String(255), unique=True)
 
-    icons = relationship("Icon", back_populates="category")
+    icons = relationship("Icon", back_populates="category", uselist=True)
 
 
 class Icon(BaseModel):
@@ -62,7 +61,7 @@ class Icon(BaseModel):
     image: Mapped[str] = Column(String(777))
     category_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(IconCategory.id))
 
-    category = relationship(IconCategory, back_populates="icons")
+    category = relationship(IconCategory, back_populates="icons", uselist=False)
 
 
 class IconAbstract(BaseModel):
@@ -78,13 +77,5 @@ class IconMetricLevel(IconAbstract):
     __tablename__ = "icon_metric_level"
 
     map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
-    map_level = relationship(MapLevel, back_populates="metrics")
-    icon = relationship(Icon)
-
-
-class IconMetricLayer(IconAbstract):
-    __tablename__ = "icon_metric_layer"
-
-    map_layer_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLayer.id))
-    map_layer = relationship(MapLayer, back_populates="metrics")
-    icon = relationship(Icon)
+    map_level = relationship(MapLevel, back_populates="metrics", uselist=False)
+    icon = relationship(Icon, uselist=False)

@@ -3,13 +3,13 @@ from pathlib import Path
 
 from exceptions.map import IconCategoryNotFound, IconNotFound, IconCategoryAlreadyExists
 from scheme.request.map.base import ActionScheme
-from settings import ICONS_DIR, SRC_DIR
+from settings import ICONS_DIR
 
 from starlette.datastructures import UploadFile
 
 from dto.request.map.icon import IconCategoryCreateDTO, IconCreateDTO
 from dto.response.map.icon import IconCategoryDTO, IconDTO, CategoryGroupedIcons
-from repositories.map.icon import IconServiceRepository, IconLayerServiceRepository, IconLevelServiceRepository
+from repositories.map.icon import IconServiceRepository, IconLevelServiceRepository
 from utils.file_operations import upload_file, delete_file
 
 
@@ -78,44 +78,6 @@ class IconService:
 
 
 @dataclass
-class IconLayerActionsService:
-    repo: IconLayerServiceRepository
-
-    async def add_icon(
-            self,
-            coord_x: float,
-            coord_y: float,
-            icon_id: int,
-            map_layer_id: int
-    ) -> dict:
-        data = await self.repo.add_icon(coord_x, coord_y, icon_id, map_layer_id)
-        return data
-
-    async def delete_icon(
-            self,
-            icon_layer_id: int
-    ):
-        await self.repo.delete_icon(icon_layer_id)
-
-    async def update_icon(
-            self,
-            icon_layer_id: int,
-            coord_x: float,
-            coord_y: float,
-            icon_id: int,
-            map_layer_id: int,
-
-    ):
-        await self.repo.update_icon(
-            icon_layer_id=icon_layer_id,
-            coord_x=coord_x,
-            coord_y=coord_y,
-            icon_id=icon_id,
-            map_layer_id=map_layer_id,
-        )
-
-
-@dataclass
 class IconLevelActionsService:
     repo: IconLevelServiceRepository
 
@@ -156,7 +118,6 @@ class IconLevelActionsService:
 @dataclass
 class ActionsHandleService:
     icon_level_service: IconLevelActionsService
-    icon_layer_service: IconLayerActionsService
 
     async def handle_actions(self, actions: list[ActionScheme]):
         for action in actions:
@@ -165,9 +126,7 @@ class ActionsHandleService:
             action_type = action.action.value
             action_model = action.type.value
 
-            if action_model == "icon_metric_layer":
-                service = self.icon_layer_service
-            elif action_model == "icon_metric_level":
+            if action_model == "icon_metric_level":
                 service = self.icon_level_service
 
             if service:

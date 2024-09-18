@@ -48,6 +48,8 @@ class IconGroupDTO(DTO):
             name=icon.name,
             image=icon.image,
         )
+
+
 @dataclass
 class CategoryGroupedIcons(DTO):
     category: IconCategoryDTO
