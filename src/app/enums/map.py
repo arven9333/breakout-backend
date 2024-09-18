@@ -8,7 +8,7 @@ class ActionEnum(Enum):
 
 
 class ModelEnum(Enum):
-    icon_metric_layer = "icon_metric_layer"
+    icon_metric_layer = "icon_metric_level"
 
 
 class MapLevelEnum(Enum):

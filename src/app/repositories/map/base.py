@@ -21,7 +21,7 @@ class MapServiceRepository(SQLAlchemyRepo):
     async def get_map_layer_leaflet_path(map_id: int, map_layer_id: int):
         return str(
             MAPS_DIR / str(map_id) / str(map_layer_id) / "tiles"
-        )
+        ).split(str(SRC_DIR))[-1][1:]
 
     async def add_map(
             self,
@@ -158,38 +158,29 @@ class MapServiceRepository(SQLAlchemyRepo):
 
             return [
                 {
-                    "id": map.id,
+                    "map_id": map.id,
                     "name": map.name,
-                    "map_levels": [
+                    "layers": [
                         {
-                            "id": map_level.id,
-                            "level": map_level.level.value,
-                            "metrics": [
-                                {
-                                    "id": level_metric.id,
-                                    "coord_x": level_metric.coord_x,
-                                    "coord_y": level_metric.coord_y,
+                            "map_layer_id": layer.id,
+                            "leaflet_path": str(MAPS_DIR / str(map.id) / str(layer.id) / 'tiles').split(str(SRC_DIR))[-1][1:],
+                            "levels": {
+                                map_level.level.value: {
                                     "map_level_id": map_level.id,
-                                }
-                                for level_metric in map_level.metrics
-                            ],
-                            "layers": [
-                                {
-                                    "id": layer.id,
-                                    "metrics": [
+                                    "icons": [
                                         {
-                                            "id": metric.id,
-                                            "coord_x": metric.coord_x,
-                                            "coord_y": metric.coord_y,
-                                            "map_layer_id": layer.id
+                                            "icon_level_id": icon.id,
+                                            "coord_x": icon.coord_x,
+                                            "coord_y": icon.coord_y,
+                                            "icon_id": icon.icon_id
                                         }
-                                        for metric in layer.metrics
+                                        for icon in map_level.metrics
                                     ]
                                 }
-                                for layer in map_level.map_layers
-                            ]
+                                for map_level in layer.map_levels
+                            }
                         }
-                        for map_level in map.map_levels
+                        for layer in map.map_layers
                     ]
                 }
                 for map in maps

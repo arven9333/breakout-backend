@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, UploadFile, File
 from dependencies.map.base import MAP_SERVICE_DEP
 from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
 from dependencies.user.auth import USER_ID_DEP
 from enums.map import MapLevelEnum
 from scheme.request.map.base import ActionScheme
-from scheme.response.map.base import MapScheme, MapLevelScheme, MapLayerScheme
+from scheme.response.map.base import MapScheme, MapLayerScheme
 
 router = APIRouter(tags=["maps.v1.service"], prefix='/service')
 

@@ -44,34 +44,6 @@ class ActionScheme(BaseModel):
             "examples": [
                 {
                     "action": "create",
-                    "type": "icon_metric_layer",
-                    "data": {
-                        "coord_x": -1.23,
-                        "coord_y": 1.23,
-                        "icon_id": 1,
-                        "map_layer_id": 1,
-                    }
-                },
-                {
-                    "action": "update",
-                    "type": "icon_metric_layer",
-                    "data": {
-                        "icon_layer_id": 1,
-                        "coord_x": -1.23,
-                        "coord_y": 1.23,
-                        "icon_id": 1,
-                        "map_layer_id": 1,
-                    }
-                },
-                {
-                    "action": "delete",
-                    "type": "icon_metric_layer",
-                    "data": {
-                        "icon_layer_id": 1,
-                    }
-                },
-                {
-                    "action": "create",
                     "type": "icon_metric_level",
                     "data": {
                         "coord_x": -1.23,
