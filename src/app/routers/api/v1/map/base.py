@@ -40,6 +40,12 @@ async def _create_map_layer(
         map_id=map_id,
     )
 
+    for level in MapLevelEnum:
+        await map_service.create_map_level(
+            map_layer_id=map_layer['id'],
+            level=level
+        )
+
     return map_layer
 
 
@@ -50,18 +56,6 @@ async def _delete_map(
         map_id: int,
 ):
     await map_service.delete_map(map_id)
-    return {
-        "success": 1
-    }
-
-
-@router.delete('/mapLevel/delete')
-async def _delete_map_level(
-        user_id: USER_ID_DEP,
-        map_service: MAP_SERVICE_DEP,
-        map_level_id: int,
-):
-    await map_service.delete_map_level(map_level_id)
     return {
         "success": 1
     }
