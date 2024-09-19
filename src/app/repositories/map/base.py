@@ -100,7 +100,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 "id": map_layer.id,
                 "map_id": map_layer.map_id,
                 "leaflet_path": await self.get_map_layer_leaflet_path(
-                    map_id=map_layer.id,
+                    map_id=map_layer.map_id,
                     map_layer_id=map_layer.id
                 )
             }
