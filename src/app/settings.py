@@ -1,8 +1,8 @@
+#!/usr/bin/python3
+
 import hashlib
 import os
 from typing import Optional
-
-import orjson
 
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
@@ -54,15 +54,6 @@ class ApiConfig(BaseSettings):
     UVICORN_WORKERS_COUNT: int = 1
     UVICORN_LOG_LEVEL: str = 'debug'
     UVICORN_RELOAD: bool = True
-
-
-class RedisConfig(BaseSettings):
-    REDIS_NAMESPACE: str = os.getenv("REDIS_NAMESPACE", "redis")
-    REDIS_NODES: str = '[]'
-
-    @property
-    def redis_cluster_nodes(self) -> list:
-        return orjson.loads(self.REDIS_NODES)
 
 
 class Settings(BaseSettings):

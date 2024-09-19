@@ -21,6 +21,7 @@ async def process_unexpected_error_middleware(
     try:
         response = await call_next(request)
 
+
     except Exception as exc:
         logger.error("process_unexpected_error_middleware: Unexpected error: %s", traceback.format_exc(limit=2))
         error = ErrorBaseDto(
