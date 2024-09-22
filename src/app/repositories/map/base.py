@@ -53,7 +53,10 @@ class MapServiceRepository(SQLAlchemyRepo):
             result = await session.execute(query)
 
             if map := result.scalar_one():
-                return map
+                return {
+                    "id": map.id,
+                    "name": map.name,
+                }
             return
 
     async def delete_map(self, map_id: int):
