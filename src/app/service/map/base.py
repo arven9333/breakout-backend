@@ -26,12 +26,12 @@ class MapService:
         )
         return map_level
 
-    async def create_map_layer(self, stream: bytes, map_id: int) -> dict:
+    async def create_map_layer(self, stream: bytes, map_id: int, format_str: str) -> dict:
 
         map_layer = await self.repo.create_map_layer(
             map_id=map_id,
         )
-        generate_tiles(stream, map_layer['leaflet_path'])
+        generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
 
         return map_layer
 

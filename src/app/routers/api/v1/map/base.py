@@ -38,6 +38,7 @@ async def _create_map_layer(
     map_layer = await map_service.create_map_layer(
         stream=stream,
         map_id=map_id,
+        format_str=file.filename.rsplit('.')[-1]
     )
 
     for level in MapLevelEnum:

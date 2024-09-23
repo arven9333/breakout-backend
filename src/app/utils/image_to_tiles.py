@@ -1,25 +1,28 @@
-from pathlib import Path
 from settings import SRC_DIR
 import os
+from wand.image import Image as WandImage
 from PIL import Image
 import io
 
 MIN_ZOOM = 2
 MAX_ZOOM = 5
-TILE_SIZE = 256
+TILE_SIZE = 512
 
 
-def generate_tiles(stream: bytes, path: str):
-
+def generate_tiles(stream: bytes, path: str, format_str: str):
     path = SRC_DIR / path
 
-    with Image.open(io.BytesIO(stream)) as orig_world_map:
-        for z in range(MIN_ZOOM, MAX_ZOOM + 1):
-            if z == 0:
-                print("Zoom level", z, "- Generating", 2 ** z * 2 ** z, "256x256 image")
-            else:
-                print("Zoom level", z, "- Generating", 2 ** z * 2 ** z, "256x256 images")
+    bytes_img = io.BytesIO(stream)
+    bytes_img.seek(0)
 
+    if format_str == 'svg':
+        with WandImage(blob=bytes_img.read(), format="svg") as image:
+            png_image = image.make_blob("png")
+            bytes_img = io.BytesIO(png_image)
+            bytes_img.seek(0)
+
+    with Image.open(bytes_img) as orig_world_map:
+        for z in range(MIN_ZOOM, MAX_ZOOM + 1):
             tiles_per_dimension = 2 ** z
 
             zoomed_world_map = orig_world_map.resize((
