@@ -27,7 +27,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     bytes_img = io.BytesIO(stream)
     bytes_img.seek(0)
-
+    print(format_str, "ФОРМАТ")
     if format_str == 'svg':
         with WandImage() as image:
             with WandColor('transparent') as background_color:
@@ -41,6 +41,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     with Image.open(bytes_img) as orig_world_map:
         orig_world_map.save(temp_file_path)
+        print(temp_file_path, "СОХРАНИЛ ВРЕМЕННЫЙ ФАЙЛ")
 
 
     try:
