@@ -37,7 +37,8 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     except Exception as e:
         print(e)
     finally:
-        os.remove(temp_file_path)
+        #os.remove(temp_file_path)
+        print(temp_file_path)
         if os.path.exists(path / 'tilemapresource.xml'):
             os.remove(path / 'tilemapresource.xml')
 
@@ -48,7 +49,7 @@ def gdal_to_tiles(file_path: str, save_dir: Path):
         'tile_size': TILE_SIZE,
         'resume': True,
         'verbose': True,
-        #'s_srs': "EPSG:3857",
+        's_srs': "EPSG:3857",
         "profile": "raster",
         "webviewer": None,
     }
