@@ -6,7 +6,7 @@ import io
 
 MIN_ZOOM = 2
 MAX_ZOOM = 5
-TILE_SIZE = 512
+TILE_SIZE = 256
 
 
 def generate_tiles(stream: bytes, path: str):
