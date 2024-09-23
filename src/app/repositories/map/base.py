@@ -156,8 +156,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 MapLevel.metrics
             ),
         ).order_by(
-            Map.id.desc(),
-            MapLayer.id.desc(),
+            Map.id,
         )
 
         async with self.session as session:
@@ -190,7 +189,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                                 for map_level in layer.map_levels
                             }
                         }
-                        for layer in map.map_layers
+                        for layer in sorted(map.map_layers, key=lambda x: x.id)
                     ]
                 }
                 for map in maps

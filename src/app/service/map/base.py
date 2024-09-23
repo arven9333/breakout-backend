@@ -1,6 +1,4 @@
-from exceptions.map import MapLevelAlreadyExists
-from scheme.request.map.base import ActionScheme
-from settings import SRC_DIR, MAPS_DIR
+from settings import MAPS_DIR
 from dataclasses import dataclass
 from enums.map import MapLevelEnum
 from repositories.map.base import MapServiceRepository
@@ -26,14 +24,18 @@ class MapService:
         )
         return map_level
 
-    async def create_map_layer(self, stream: bytes, map_id: int, format_str: str) -> dict:
+    async def create_map_layer(self, stream: bytes, map_id: int, format_str: str) -> tuple[dict, bool]:
 
         map_layer = await self.repo.create_map_layer(
             map_id=map_id,
         )
-        generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
 
-        return map_layer
+        try:
+            generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
+            status = True
+        except Exception as e:
+            status = False
+        return map_layer, status
 
     async def delete_map_layer(self, map_layer_id: int):
         map_layer = await self.repo.get_map_layer_by_id(map_layer_id)

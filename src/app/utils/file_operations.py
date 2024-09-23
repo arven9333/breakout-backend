@@ -9,6 +9,11 @@ from starlette.datastructures import UploadFile
 import uuid
 
 
+def create_dirs(path: Path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+
 def save_upload_file(upload_file: UploadFile, destination: Path) -> None:
     try:
         with destination.open("wb") as buffer:

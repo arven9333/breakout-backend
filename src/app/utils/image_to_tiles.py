@@ -1,16 +1,24 @@
+from pathlib import Path
+
 from settings import SRC_DIR
 import os
+from utils.file_operations import generate_uuid4_filename, create_dirs
 from wand.image import Image as WandImage
 from PIL import Image
 import io
+import gdal2tiles
 
 MIN_ZOOM = 2
 MAX_ZOOM = 5
-TILE_SIZE = 512
+TILE_SIZE = 256
 
 
 def generate_tiles(stream: bytes, path: str, format_str: str):
     path = SRC_DIR / path
+
+    create_dirs(path)
+
+    temp_file_path = str(path / generate_uuid4_filename('temp.png'))
 
     bytes_img = io.BytesIO(stream)
     bytes_img.seek(0)
@@ -22,23 +30,26 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
             bytes_img.seek(0)
 
     with Image.open(bytes_img) as orig_world_map:
-        for z in range(MIN_ZOOM, MAX_ZOOM + 1):
-            tiles_per_dimension = 2 ** z
+        orig_world_map.save(temp_file_path)
 
-            zoomed_world_map = orig_world_map.resize((
-                tiles_per_dimension * TILE_SIZE,
-                tiles_per_dimension * TILE_SIZE,
-            ))
-            for x in range(tiles_per_dimension):
+    try:
+        gdal_to_tiles(file_path=temp_file_path, save_dir=path)
+    except Exception as e:
+        print(e)
+    finally:
+        os.remove(temp_file_path)
+        if os.path.exists(path / 'tilemapresource.xml'):
+            os.remove(path / 'tilemapresource.xml')
 
-                x_val_dir = path / str(z) / str(x)
-                if not os.path.exists(x_val_dir):
-                    os.makedirs(x_val_dir)
-                for y in range(tiles_per_dimension):
-                    cropped = zoomed_world_map.crop((
-                        x * TILE_SIZE,
-                        y * TILE_SIZE,
-                        (x + 1) * TILE_SIZE - 1,
-                        (y + 1) * TILE_SIZE - 1,
-                    ))
-                    cropped.save(x_val_dir / (str(y) + ".png"))
+
+def gdal_to_tiles(file_path: str, save_dir: Path):
+    options = {
+        'zoom': (MIN_ZOOM, MAX_ZOOM),
+        'tile_size': TILE_SIZE,
+        'resume': True,
+        'verbose': True,
+        #'s_srs': "EPSG:3857",
+        "profile": "raster",
+        "webviewer": None,
+    }
+    gdal2tiles.generate_tiles(input_file=file_path, output_folder=str(save_dir), **options)

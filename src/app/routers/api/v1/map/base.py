@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from dependencies.map.base import MAP_SERVICE_DEP
 from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
 from dependencies.user.auth import USER_ID_DEP
@@ -35,17 +35,21 @@ async def _create_map_layer(
 ):
     stream = await file.read()
 
-    map_layer = await map_service.create_map_layer(
+    map_layer, status = await map_service.create_map_layer(
         stream=stream,
         map_id=map_id,
         format_str=file.filename.rsplit('.')[-1]
     )
 
-    for level in MapLevelEnum:
-        await map_service.create_map_level(
-            map_layer_id=map_layer['id'],
-            level=level
-        )
+    if status is True:
+        for level in MapLevelEnum:
+            await map_service.create_map_level(
+                map_layer_id=map_layer['id'],
+                level=level
+            )
+    else:
+        await map_service.delete_map_layer(map_layer['id'])
+        raise HTTPException(status_code=500, detail="Возникла ошибка при создание слоя")
 
     return map_layer
 
