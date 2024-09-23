@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, aliased
 
 from settings import MAPS_DIR, SRC_DIR
 from sqlalchemy import select, delete
@@ -142,8 +142,11 @@ class MapServiceRepository(SQLAlchemyRepo):
             await session.flush()
 
     async def get_metrics(self):
+
         query = select(
             Map
+        ).join(
+            Map.map_layers
         ).options(
             joinedload(
                 Map.map_layers
@@ -169,7 +172,8 @@ class MapServiceRepository(SQLAlchemyRepo):
                     "layers": [
                         {
                             "map_layer_id": layer.id,
-                            "leaflet_path": str(MAPS_DIR / str(map.id) / str(layer.id) / 'tiles').split(str(SRC_DIR))[-1][1:],
+                            "leaflet_path": str(MAPS_DIR / str(map.id) / str(layer.id) / 'tiles').split(str(SRC_DIR))[
+                                                -1][1:],
                             "levels": {
                                 map_level.level.value: {
                                     "map_level_id": map_level.id,
