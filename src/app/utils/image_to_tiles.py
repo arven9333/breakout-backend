@@ -28,12 +28,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     bytes_img = io.BytesIO(stream)
 
     if format_str == 'svg':
-        with WandImage() as image:
-            with WandColor('transparent') as background_color:
-                library.MagickSetBackgroundColor(image.wand,
-                                                 background_color.resource)
-            image.read(blob=stream, format="svg")
-
+        with WandImage(blob=bytes_img.read(), background=WandColor("transparent")) as image:
             png_image = image.make_blob("png32")
             bytes_img = io.BytesIO(png_image)
 
