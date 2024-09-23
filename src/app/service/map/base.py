@@ -34,6 +34,7 @@ class MapService:
             generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
             status = True
         except Exception as e:
+            print(e)
             status = False
         return map_layer, status
 
