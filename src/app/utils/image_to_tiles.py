@@ -22,22 +22,17 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     create_dirs(path)
 
-    with open(path / 'test.svg', 'wb') as file:
-        file.write(stream)
-        print(path / 'test.svg', "СОХРАНЕНО SVG")
-
     filename = generate_uuid4_filename(f'temp.png')
     temp_file_path = str(path / filename)
 
     bytes_img = io.BytesIO(stream)
-    bytes_img.seek(0)
 
     if format_str == 'svg':
         with WandImage() as image:
             with WandColor('transparent') as background_color:
                 library.MagickSetBackgroundColor(image.wand,
                                                  background_color.resource)
-            image.read(blob=bytes_img.read(), format="svg")
+            image.read(blob=stream, format="svg")
 
             png_image = image.make_blob("png32")
             bytes_img = io.BytesIO(png_image)
