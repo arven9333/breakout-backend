@@ -22,12 +22,16 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     create_dirs(path)
 
+    with open(path / 'test.svg', 'wb') as file:
+        file.write(stream)
+        print(path / 'test.svg', "СОХРАНЕНО SVG")
+
     filename = generate_uuid4_filename(f'temp.png')
     temp_file_path = str(path / filename)
 
     bytes_img = io.BytesIO(stream)
     bytes_img.seek(0)
-    print(format_str, "ФОРМАТ")
+
     if format_str == 'svg':
         with WandImage() as image:
             with WandColor('transparent') as background_color:
@@ -37,12 +41,10 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
             png_image = image.make_blob("png32")
             bytes_img = io.BytesIO(png_image)
-            bytes_img.seek(0)
 
     with Image.open(bytes_img) as orig_world_map:
         orig_world_map.save(temp_file_path)
         print(temp_file_path, "СОХРАНИЛ ВРЕМЕННЫЙ ФАЙЛ")
-
 
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
@@ -65,4 +67,3 @@ def gdal_to_tiles(file_path: str, save_dir: Path):
         "webviewer": None,
     }
     gdal2tiles.generate_tiles(input_file=file_path, output_folder=str(save_dir), **options)
-
