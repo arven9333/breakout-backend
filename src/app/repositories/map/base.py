@@ -152,6 +152,9 @@ class MapServiceRepository(SQLAlchemyRepo):
             ).joinedload(
                 MapLevel.metrics
             ),
+        ).order_by(
+            Map.id.desc(),
+            MapLayer.id.desc(),
         )
 
         async with self.session as session:
