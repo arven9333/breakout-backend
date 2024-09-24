@@ -3,7 +3,7 @@ import logging
 from sqlalchemy.orm import joinedload, aliased
 
 from settings import MAPS_DIR, SRC_DIR
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update
 
 from _logging.base import setup_logging
 from enums.map import MapLevelEnum
@@ -102,11 +102,39 @@ class MapServiceRepository(SQLAlchemyRepo):
             return {
                 "id": map_layer.id,
                 "map_id": map_layer.map_id,
+                "height": map_layer.height,
+                "width": map_layer.width,
                 "leaflet_path": await self.get_map_layer_leaflet_path(
                     map_id=map_layer.map_id,
                     map_layer_id=map_layer.id
                 )
             }
+
+    async def map_layer_update_height_width(self, map_layer_id: int, height: int, width: int):
+        query = update(
+            MapLayer
+        ).values(
+            height=height,
+            width=width
+        ).where(
+            MapLayer.id == map_layer_id
+        ).returning(MapLayer)
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if map_layer := result.scalar_one():
+                return {
+                    "id": map_layer.id,
+                    "map_id": map_layer.map_id,
+                    "height": map_layer.height,
+                    "width": map_layer.width,
+                    "leaflet_path": await self.get_map_layer_leaflet_path(
+                        map_id=map_layer.map_id,
+                        map_layer_id=map_layer.id
+                    )
+                }
+            return
 
     async def get_map_layer_by_id(self, map_layer_id: int):
 
@@ -123,6 +151,8 @@ class MapServiceRepository(SQLAlchemyRepo):
                 return {
                     "id": map_layer.id,
                     "map_id": map_layer.map_id,
+                    "height": map_layer.height,
+                    "width": map_layer.width,
                     "leaflet_path": await self.get_map_layer_leaflet_path(
                         map_id=map_layer.map_id,
                         map_layer_id=map_layer.id
@@ -145,7 +175,7 @@ class MapServiceRepository(SQLAlchemyRepo):
 
         query = select(
             Map
-        ).join(
+        ).outerjoin(
             Map.map_layers
         ).options(
             joinedload(
@@ -171,6 +201,8 @@ class MapServiceRepository(SQLAlchemyRepo):
                     "layers": [
                         {
                             "map_layer_id": layer.id,
+                            "height": layer.height,
+                            "width": layer.width,
                             "leaflet_path": str(MAPS_DIR / str(map.id) / str(layer.id) / 'tiles').split(str(SRC_DIR))[
                                                 -1][1:],
                             "levels": {

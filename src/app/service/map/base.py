@@ -31,7 +31,12 @@ class MapService:
         )
 
         try:
-            generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
+            height, width = generate_tiles(stream=stream, path=map_layer['leaflet_path'], format_str=format_str)
+            map_layer = await self.repo.map_layer_update_height_width(
+                map_layer_id=map_layer['id'],
+                height=height,
+                width=width
+            )
             status = True
         except Exception as e:
             print(e)

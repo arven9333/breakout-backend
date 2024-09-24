@@ -26,6 +26,9 @@ class MapLayer(BaseModel):
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
     map_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(Map.id))
 
+    height: Mapped[int] = Column(BigInteger, default=0, nullable=True)
+    width: Mapped[int] = Column(BigInteger, default=0, nullable=True)
+
     map = relationship(Map, back_populates="map_layers", uselist=False)
     map_levels = relationship("MapLevel", back_populates="map_layer", uselist=True)
 
