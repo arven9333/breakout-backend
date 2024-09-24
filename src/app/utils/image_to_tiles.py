@@ -25,7 +25,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     filename = generate_uuid4_filename(f'temp.png')
     temp_file_path = str(path / filename)
-
+    temp_file_path = './test.png'
     bytes_img = io.BytesIO(stream)
 
     print(f"Начал сохранение {temp_file_path}")
@@ -34,12 +34,13 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     with WandImage(blob=bytes_img.read()) as image:
         image.format = 'png'
         image.background_color = Color('transparent')
-        image.save(filename=f"png32:{temp_file_path}")
         height, width = image.height, image.width
         if width > 4000:
-            resizing = round(height / width, 2)
-            width, height = 4000, int(4000 * resizing)
-            image.resize(width, height)
+            resizing = round((height / width), 2)
+            width, height = 3840, int(3840 * resizing)
+            image.resize(width=width, height=height)
+
+        image.save(filename=f"png32:{temp_file_path}")
 
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
