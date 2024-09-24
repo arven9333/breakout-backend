@@ -31,16 +31,16 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     print(f"Начал сохранение {temp_file_path}")
     height, width = 0, 0
 
-    if format_str == 'svg':
-        with WandImage(blob=bytes_img.read()) as image:
-            image.format = 'png'
-            image.background_color = Color('transparent')
-            image.save(filename=f"png32:{temp_file_path}")
-            height, width = image.height, image.width
-    else:
-        with Image.open(bytes_img) as orig_world_map:
-            orig_world_map.save(temp_file_path)
-            height, width = orig_world_map.height, orig_world_map.width
+    #if format_str == 'svg':
+    with WandImage(blob=bytes_img.read()) as image:
+        image.format = 'png'
+        image.background_color = Color('transparent')
+        image.save(filename=f"png32:{temp_file_path}")
+        height, width = image.height, image.width
+    # else:
+    #     with Image.open(bytes_img) as orig_world_map:
+    #         orig_world_map.save(temp_file_path)
+    #         height, width = orig_world_map.height, orig_world_map.width
     print(f"Сохранил {temp_file_path}")
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
