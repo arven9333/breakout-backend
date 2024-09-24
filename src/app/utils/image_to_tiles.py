@@ -28,7 +28,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     bytes_img = io.BytesIO(stream)
 
     if format_str == 'svg':
-        with WandImage(blob=bytes_img.read(), background=WandColor("transparent")) as image:
+        with WandImage(blob=bytes_img.read()) as image:
             image.format = 'png'
             image.save(filename=temp_file_path)
     else:
@@ -40,7 +40,8 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     except Exception as e:
         print(e)
     finally:
-        os.remove(temp_file_path)
+        #os.remove(temp_file_path)
+        print(temp_file_path)
         if os.path.exists(path / 'tilemapresource.xml'):
             os.remove(path / 'tilemapresource.xml')
 
