@@ -25,17 +25,23 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     temp_file_path = str(path / filename)
 
     bytes_img = io.BytesIO(stream)
-    print(temp_file_path)
+    temp_file_path = "./from_local_64.png"
+    path = './tiles'
     if format_str == 'svg':
         with WandImage(blob=bytes_img.read()) as image:
             image.format = 'png'
+            # image.quantize(
+            #     16,
+            #     'srgb'
+            # )
+
             image.background_color = Color('transparent')
             image.save(filename=temp_file_path)
     else:
         with Image.open(bytes_img) as orig_world_map:
             orig_world_map.save(temp_file_path)
 
-
+    return
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
     except Exception as e:
@@ -60,4 +66,4 @@ def gdal_to_tiles(file_path: str, save_dir: Path):
 
 
 
-#gdal_to_tiles('/home/ven9/Рабочий стол/from_server.png', './tiles')
+#gdal_to_tiles('/home/ven9/projects/Ilkhom/tarkov_fixed/breakout-backend/src/app/from_local_64.png', './tiles')
