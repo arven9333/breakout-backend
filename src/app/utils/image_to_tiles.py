@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from wand.color import Color
 from wand.image import Image as WandImage
 
 from settings import SRC_DIR
@@ -24,15 +25,15 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     temp_file_path = str(path / filename)
 
     bytes_img = io.BytesIO(stream)
-
+    print(temp_file_path)
     if format_str == 'svg':
-        with WandImage(blob=bytes_img.read()) as image:
+        with WandImage(blob=bytes_img.read(), background=Color('transparent')) as image:
             image.format = 'png'
             image.save(filename=temp_file_path)
     else:
         with Image.open(bytes_img) as orig_world_map:
             orig_world_map.save(temp_file_path)
-    print(temp_file_path)
+
 
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
@@ -57,3 +58,5 @@ def gdal_to_tiles(file_path: str, save_dir: Path):
     gdal2tiles.generate_tiles(input_file=file_path, output_folder=str(save_dir), **options)
 
 
+
+#gdal_to_tiles('/home/ven9/Рабочий стол/from_server.png', './tiles')
