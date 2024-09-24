@@ -29,13 +29,13 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     if format_str == 'svg':
         with WandImage(blob=bytes_img.read(), background=WandColor("transparent")) as image:
-            png_image = image.make_blob("png32")
-            bytes_img = io.BytesIO(png_image)
-
-    with Image.open(bytes_img) as orig_world_map:
-        orig_world_map.save(temp_file_path)
-        print(temp_file_path, "СОХРАНИЛ ВРЕМЕННЫЙ ФАЙЛ")
-
+            image.format = 'png'
+            image.save(filename='test.png')
+    else:
+        with Image.open(bytes_img) as orig_world_map:
+            orig_world_map.save(temp_file_path)
+    print(temp_file_path, "СОХРАНИЛ ВРЕМЕННЫЙ ФАЙЛ")
+    return
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
     except Exception as e:
