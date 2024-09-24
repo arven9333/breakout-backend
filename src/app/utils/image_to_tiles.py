@@ -26,7 +26,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     temp_file_path = str(path / filename)
 
     bytes_img = io.BytesIO(stream)
-
+    print(f"Начал сохранение")
     if format_str == 'svg':
         with WandImage(blob=bytes_img.read(), background=WandColor("transparent")) as image:
             image.format = 'png'
@@ -34,7 +34,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
     else:
         with Image.open(bytes_img) as orig_world_map:
             orig_world_map.save(temp_file_path)
-    print(temp_file_path, "СОХРАНИЛ ВРЕМЕННЫЙ ФАЙЛ")
+    print(temp_file_path, "Закончил сохранение")
     return
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
