@@ -16,6 +16,7 @@ from PIL import Image
 MIN_ZOOM = 2
 MAX_ZOOM = 5
 TILE_SIZE = 256
+WIDTH_MAX = 3200
 
 
 def generate_tiles(stream: bytes, path: str, format_str: str):
@@ -25,19 +26,15 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
 
     filename = generate_uuid4_filename(f'temp.png')
     temp_file_path = str(path / filename)
-    temp_file_path = './test.png'
     bytes_img = io.BytesIO(stream)
-
-    print(f"Начал сохранение {temp_file_path}")
-    height, width = 0, 0
 
     with WandImage(blob=bytes_img.read()) as image:
         image.format = 'png'
         image.background_color = Color('transparent')
         height, width = image.height, image.width
-        if width > 4000:
+        if width > WIDTH_MAX:
             resizing = round((height / width), 2)
-            width, height = 3840, int(3840 * resizing)
+            width, height = WIDTH_MAX, int(WIDTH_MAX * resizing)
             image.resize(width=width, height=height)
 
         image.save(filename=f"png32:{temp_file_path}")
@@ -50,7 +47,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
         os.remove(temp_file_path)
         if os.path.exists(path / 'tilemapresource.xml'):
             os.remove(path / 'tilemapresource.xml')
-        print(f"Удалил {temp_file_path}")
+
     return height, width
 
 
