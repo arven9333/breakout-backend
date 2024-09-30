@@ -37,7 +37,7 @@ def generate_tiles(stream: bytes, path: str, format_str: str):
             width, height = WIDTH_MAX, int(WIDTH_MAX * resizing)
             image.resize(width=width, height=height)
 
-        image.save(filename=f"png64:{temp_file_path}")
+        image.save(filename=f"png32:{temp_file_path}")
 
     try:
         gdal_to_tiles(file_path=temp_file_path, save_dir=path)
