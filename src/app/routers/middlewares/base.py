@@ -44,5 +44,4 @@ def setup_middlewares(app: FastAPI, request_id_log_length: int = 6):
     else:
         logger.info(
             "Save user logs is turn off. "
-            "To enabled save all request/response to user.logs set env ENABLE_LOG_REQUESTS=True",
         )
