@@ -78,7 +78,7 @@ async def lifespan(app: FastAPI):
     que = Queue()
 
     logger.addHandler(QueueHandler(que))
-    print(f"НАЧАЛ")
+    print(f"НАЧАЛ ######################")
     #await run_app(app, settings.api_config)
     listener = QueueListener(que, logging.StreamHandler())
     listener.start()
@@ -95,5 +95,5 @@ setup_logging(__name__)
 
 app = create_app(settings)
 
-#if __name__ == "__main__":
-asyncio.run(run_app(app, settings.api_config))
+if __name__ == "__main__":
+    asyncio.run(run_app(app, settings.api_config))
