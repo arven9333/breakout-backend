@@ -43,35 +43,33 @@ def create_app(settings: Settings) -> FastAPI:
     app.state.settings = settings
     setup_routers(app=app, app_root=settings.api_config.API_ROOT)
     setup_middlewares(app)
-
-    #asyncio.run(run_app(app, settings.api_config))
     return app
 
 
-# async def run_app(app: FastAPI, api_config: ApiConfig) -> None:
-#     aplication = app
-#     if api_config.UVICORN_RELOAD:
-#         aplication = "main:app"
-#
-#     config = uvicorn.Config(
-#         aplication,
-#         host=api_config.BACK_HOST,
-#         port=api_config.BACK_PORT,
-#         workers=api_config.UVICORN_WORKERS_COUNT,
-#         log_level=api_config.UVICORN_LOG_LEVEL.lower(),
-#         log_config=None,
-#         reload=api_config.UVICORN_RELOAD,
-#     )
-#
-#     server = uvicorn.Server(config)
-#     logger.info(f"Running API at: http://{api_config.BACK_HOST}:{api_config.BACK_PORT}")
-#     logger.debug(f"Reload: {config.should_reload}")
-#
-#     if config.should_reload:
-#         sock = config.bind_socket()
-#         ChangeReload(config, target=server.run, sockets=[sock]).run()
-#
-#     await server.serve()
+async def run_app(app: FastAPI, api_config: ApiConfig) -> None:
+    aplication = app
+    if api_config.UVICORN_RELOAD:
+        aplication = "main:app"
+
+    config = uvicorn.Config(
+        aplication,
+        host=api_config.BACK_HOST,
+        port=api_config.BACK_PORT,
+        workers=api_config.UVICORN_WORKERS_COUNT,
+        log_level=api_config.UVICORN_LOG_LEVEL.lower(),
+        log_config=None,
+        reload=api_config.UVICORN_RELOAD,
+    )
+
+    server = uvicorn.Server(config)
+    logger.info(f"Running API at: http://{api_config.BACK_HOST}:{api_config.BACK_PORT}")
+    logger.debug(f"Reload: {config.should_reload}")
+
+    if config.should_reload:
+        sock = config.bind_socket()
+        ChangeReload(config, target=server.run, sockets=[sock]).run()
+
+    await server.serve()
 
 
 @asynccontextmanager
@@ -93,4 +91,7 @@ logger = logging.getLogger(__name__)
 setup_logging(__name__)
 
 app = create_app(settings)
+
+if __name__ == "__main__":
+    asyncio.run(run_app(app, settings.api_config))
 
