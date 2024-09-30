@@ -57,7 +57,7 @@ async def run_app(app: FastAPI, api_config: ApiConfig) -> None:
         port=api_config.BACK_PORT,
         workers=api_config.UVICORN_WORKERS_COUNT,
         log_level=api_config.UVICORN_LOG_LEVEL.lower(),
-        log_config=None,
+        #log_config=None,
         reload=api_config.UVICORN_RELOAD,
     )
 
