@@ -44,6 +44,7 @@ def create_app(settings: Settings) -> FastAPI:
     setup_routers(app=app, app_root=settings.api_config.API_ROOT)
     setup_middlewares(app)
 
+    asyncio.run(run_app(app, settings.api_config))
     return app
 
 
@@ -93,5 +94,3 @@ setup_logging(__name__)
 
 app = create_app(settings)
 
-if __name__ == "__main__":
-    asyncio.run(run_app(app, settings.api_config))
