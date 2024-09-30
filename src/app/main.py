@@ -61,15 +61,15 @@ async def run_app(app: FastAPI, api_config: ApiConfig) -> None:
         reload=api_config.UVICORN_RELOAD,
     )
 
-    server = uvicorn.Server(config)
+    #server = uvicorn.Server(config)
     logger.info(f"Running API at: http://{api_config.BACK_HOST}:{api_config.BACK_PORT}")
     logger.debug(f"Reload: {config.should_reload}")
 
-    if config.should_reload:
-        sock = config.bind_socket()
-        ChangeReload(config, target=server.run, sockets=[sock]).run()
-
-    await server.serve()
+    # if config.should_reload:
+    #     sock = config.bind_socket()
+    #     ChangeReload(config, target=server.run, sockets=[sock]).run()
+    #
+    # await server.serve()
 
 
 @asynccontextmanager
