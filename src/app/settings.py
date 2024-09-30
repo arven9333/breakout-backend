@@ -51,9 +51,9 @@ class ApiConfig(BaseSettings):
     API_ROOT: str = ''
     BACK_HOST: str = '0.0.0.0'
     BACK_PORT: int = 8000
-    UVICORN_WORKERS_COUNT: int = 6
+    UVICORN_WORKERS_COUNT: int = 1
     UVICORN_LOG_LEVEL: str = 'debug'
-    UVICORN_RELOAD: bool = False
+    UVICORN_RELOAD: bool = True
 
 
 class Settings(BaseSettings):
