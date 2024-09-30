@@ -42,7 +42,7 @@ def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(**app_settings)
     app.state.settings = settings
     setup_routers(app=app, app_root=settings.api_config.API_ROOT)
-    setup_middlewares(app)
+    #setup_middlewares(app)
     return app
 
 
