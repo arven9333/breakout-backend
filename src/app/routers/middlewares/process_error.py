@@ -1,4 +1,5 @@
 import traceback
+from _socket import gaierror
 from typing import Callable, Awaitable
 
 from fastapi import Request, Response
@@ -22,6 +23,10 @@ async def process_unexpected_error_middleware(
 ) -> Response:
     try:
         response = await call_next(request)
+    except gaierror as exc:
+        if str(exc) == 'Name or service not known':
+            return Response(status_code=500, content=f"Unknown error - {str(exc)}")
+
     except RuntimeError as exc:
         if str(exc) == 'No response returned.' and await request.is_disconnected():
             return Response(status_code=HTTP_204_NO_CONTENT)
