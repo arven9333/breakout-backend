@@ -26,6 +26,7 @@ async def process_unexpected_error_middleware(
     except gaierror as exc:
         if str(exc) == 'Name or service not known':
             return Response(status_code=500, content=f"Unknown error - {str(exc)}")
+        raise
 
     except RuntimeError as exc:
         if str(exc) == 'No response returned.' and await request.is_disconnected():
