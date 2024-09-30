@@ -28,20 +28,20 @@ def setup_middlewares(app: FastAPI, request_id_log_length: int = 6):
         expose_headers=['X-Request-ID']
     )
 
-    app.add_middleware(
-        CorrelationIdMiddleware,
-        header_name='X-Request-ID',
-        update_request_header=True,
-        generator=lambda: uuid4().hex,
-        validator=is_valid_uuid4,
-        transformer=lambda a: str(a)[:request_id_log_length],
-    )
-
-    app.add_middleware(BaseHTTPMiddleware, dispatch=process_unexpected_error_middleware)
-    if settings.ENABLE_LOG_REQUESTS:
-        logger.info("Save user logs is turn on.")
-        app.add_middleware(BaseHTTPMiddleware, dispatch=LoggingRoute())
-    else:
-        logger.info(
-            "Save user logs is turn off. "
-        )
+    # app.add_middleware(
+    #     CorrelationIdMiddleware,
+    #     header_name='X-Request-ID',
+    #     update_request_header=True,
+    #     generator=lambda: uuid4().hex,
+    #     validator=is_valid_uuid4,
+    #     transformer=lambda a: str(a)[:request_id_log_length],
+    # )
+    #
+    # app.add_middleware(BaseHTTPMiddleware, dispatch=process_unexpected_error_middleware)
+    # if settings.ENABLE_LOG_REQUESTS:
+    #     logger.info("Save user logs is turn on.")
+    #     app.add_middleware(BaseHTTPMiddleware, dispatch=LoggingRoute())
+    # else:
+    #     logger.info(
+    #         "Save user logs is turn off. "
+    #     )
