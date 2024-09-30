@@ -1,5 +1,8 @@
 import json
 import logging
+
+from starlette.status import HTTP_204_NO_CONTENT
+
 from _logging.base import setup_logging
 
 from typing import Callable, Awaitable
@@ -66,7 +69,12 @@ class LoggingRoute:
         if self.can_logs_request(request):
             await self.set_request_body(request)
 
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except RuntimeError as exc:
+            if str(exc) == 'No response returned.' and await request.is_disconnected():
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            raise
 
         if not self.can_logs_request(request, response):
             return response

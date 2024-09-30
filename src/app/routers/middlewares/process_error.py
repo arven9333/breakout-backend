@@ -2,6 +2,8 @@ import traceback
 from typing import Callable, Awaitable
 
 from fastapi import Request, Response
+from starlette.status import HTTP_204_NO_CONTENT
+
 from _logging.base import setup_logging
 import logging
 
@@ -20,7 +22,10 @@ async def process_unexpected_error_middleware(
 ) -> Response:
     try:
         response = await call_next(request)
-
+    except RuntimeError as exc:
+        if str(exc) == 'No response returned.' and await request.is_disconnected():
+            return Response(status_code=HTTP_204_NO_CONTENT)
+        raise
 
     except Exception as exc:
         logger.error("process_unexpected_error_middleware: Unexpected error: %s", traceback.format_exc(limit=2))
