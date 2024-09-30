@@ -16,7 +16,7 @@ from PIL import Image
 MIN_ZOOM = 2
 MAX_ZOOM = 5
 TILE_SIZE = 256
-WIDTH_MAX = 3840
+WIDTH_MAX = 7680
 
 
 def generate_tiles(stream: bytes, path: str, format_str: str):
