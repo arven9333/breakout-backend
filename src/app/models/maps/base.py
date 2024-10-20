@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float, Integer
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from enums.map import MapLevelEnum
+from enums.map import MapLevelEnum, MapStatusEnum
 from models.base import BaseModel, Column
 from models.common.base import CascadeForeignKey, RestrictForeignKey
 from models.user.base import User
@@ -15,7 +15,7 @@ class Map(BaseModel):
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
     name: Mapped[str] = Column(String(255))
     user_id: Mapped[int] = Column(BigInteger, RestrictForeignKey(User.id))
-
+    status: Mapped[MapStatusEnum] = mapped_column(default=MapStatusEnum.hide, nullable=True)
     user = relationship(User)
     map_layers = relationship("MapLayer", back_populates="map", uselist=True)
 
@@ -63,7 +63,6 @@ class Icon(BaseModel):
     name: Mapped[str] = Column(String(255))
     image: Mapped[str] = Column(String(777))
     category_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(IconCategory.id))
-
     category = relationship(IconCategory, back_populates="icons", uselist=False)
 
 
@@ -81,4 +80,7 @@ class IconMetricLevel(IconAbstract):
 
     map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
     map_level = relationship(MapLevel, back_populates="metrics", uselist=False)
+    radius: Mapped[float] = Column(Float, nullable=True)
+    radis_color: Mapped[str] = Column(String(255), nullable=True)
     icon = relationship(Icon, uselist=False)
+

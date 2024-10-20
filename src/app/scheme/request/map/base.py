@@ -50,6 +50,8 @@ class ActionScheme(BaseModel):
                         "coord_y": 1.23,
                         "icon_id": 1,
                         "map_level_id": 1,
+                        "radius": 0.0,
+                        "radius_color": "color"
                     }
                 },
                 {
@@ -61,6 +63,8 @@ class ActionScheme(BaseModel):
                         "coord_y": 1.23,
                         "icon_id": 1,
                         "map_level_id": 1,
+                        "radius": 0.0,
+                        "radius_color": "color",
                     }
                 },
                 {

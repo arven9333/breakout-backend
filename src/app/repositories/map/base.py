@@ -1,12 +1,12 @@
 import logging
 
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy.orm import joinedload
 
 from settings import MAPS_DIR, SRC_DIR
 from sqlalchemy import select, delete, update
 
 from _logging.base import setup_logging
-from enums.map import MapLevelEnum
+from enums.map import MapLevelEnum, MapStatusEnum
 
 from repositories.base import SQLAlchemyRepo
 from models.maps.base import Map, MapLevel, MapLayer
@@ -27,11 +27,13 @@ class MapServiceRepository(SQLAlchemyRepo):
             self,
             name: str,
             user_id: int,
+            status: MapStatusEnum,
     ) -> dict:
 
         map = Map(
             name=name,
             user_id=user_id,
+            status=status,
         )
         async with self.session as session:
             await session.add(map)
@@ -39,7 +41,8 @@ class MapServiceRepository(SQLAlchemyRepo):
 
             return {
                 "id": map.id,
-                "name": name
+                "name": name,
+                "status": map.status,
             }
 
     async def get_map_by_id(self, map_id: int):
@@ -56,6 +59,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 return {
                     "id": map.id,
                     "name": map.name,
+                    "status": map.status,
                 }
             return
 
@@ -69,6 +73,25 @@ class MapServiceRepository(SQLAlchemyRepo):
         async with self.session as session:
             await session.execute(query)
             await session.flush()
+
+    async def update_map(self, map_id: int, status: MapStatusEnum):
+        query = update(
+            Map
+        ).values(
+            status=status,
+        ).where(
+            Map.id==map_id
+        ).returning(Map)
+
+        async with self.session as session:
+            result = await session.execute(query)
+            if map := result.scalar_one():
+                return {
+                    "id": map.id,
+                    "name": map.name,
+                    "status": map.status,
+                }
+            return
 
     async def add_map_level(
             self,
@@ -171,12 +194,20 @@ class MapServiceRepository(SQLAlchemyRepo):
             await session.execute(query)
             await session.flush()
 
-    async def get_metrics(self):
+    async def get_metrics(self, status: MapStatusEnum | None = None):
+
+        _conditions = []
+        if status is not None:
+            _conditions.append(
+                Map.status == status
+            )
 
         query = select(
             Map
         ).outerjoin(
             Map.map_layers
+        ).where(
+            *_conditions
         ).options(
             joinedload(
                 Map.map_layers
@@ -198,6 +229,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 {
                     "map_id": map.id,
                     "name": map.name,
+                    "status": map.status,
                     "layers": [
                         {
                             "map_layer_id": layer.id,
@@ -213,7 +245,9 @@ class MapServiceRepository(SQLAlchemyRepo):
                                             "icon_level_id": icon.id,
                                             "coord_x": icon.coord_x,
                                             "coord_y": icon.coord_y,
-                                            "icon_id": icon.icon_id
+                                            "radius": icon.radius,
+                                            "radius_color": icon.radis_color,
+                                            "icon_id": icon.icon_id,
                                         }
                                         for icon in map_level.metrics
                                     ]

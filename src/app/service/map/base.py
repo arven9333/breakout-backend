@@ -1,6 +1,6 @@
 from settings import MAPS_DIR
 from dataclasses import dataclass
-from enums.map import MapLevelEnum
+from enums.map import MapLevelEnum, MapStatusEnum
 from repositories.map.base import MapServiceRepository
 from service.map.icon import delete_file
 
@@ -11,8 +11,8 @@ from utils.image_to_tiles import generate_tiles
 class MapService:
     repo: MapServiceRepository
 
-    async def create_map(self, name: str, user_id: int) -> dict:
-        map = await self.repo.add_map(name=name, user_id=user_id)
+    async def create_map(self, name: str, user_id: int, status: MapStatusEnum,) -> dict:
+        map = await self.repo.add_map(name=name, user_id=user_id, status=status,)
 
         return map
 
@@ -58,5 +58,11 @@ class MapService:
             await delete_file(MAPS_DIR / str(map['id']))
             await self.repo.delete_map(map_id)
 
-    async def get_metrics(self):
-        return await self.repo.get_metrics()
+    async def get_metrics(self, status: MapStatusEnum | None = None):
+        return await self.repo.get_metrics(status=status,)
+
+    async def update_map(self, map_id: int, status: MapStatusEnum):
+        map = await self.repo.get_map_by_id(map_id)
+
+        if map is not None:
+            await self.repo.update_map(map_id=map_id, status=status)

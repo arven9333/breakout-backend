@@ -1,10 +1,8 @@
-from typing import Annotated
-
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from dependencies.map.base import MAP_SERVICE_DEP
 from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
 from dependencies.user.auth import USER_ID_DEP
-from enums.map import MapLevelEnum
+from enums.map import MapLevelEnum, MapStatusEnum
 from scheme.request.map.base import ActionScheme
 from scheme.response.map.base import MapScheme, MapLayerScheme
 
@@ -16,10 +14,12 @@ async def _create_map(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
         name: str,
+        status: MapStatusEnum = MapStatusEnum.hide,
 ):
     map = await map_service.create_map(
         name=name,
         user_id=user_id,
+        status=status,
     )
 
     return map
@@ -66,6 +66,19 @@ async def _delete_map(
     }
 
 
+@router.patch('/update')
+async def _update_map(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+        map_id: int,
+        status: MapStatusEnum,
+):
+    await map_service.update_map(map_id=map_id, status=status,)
+    return {
+        "success": 1
+    }
+
+
 @router.delete('/mapLayer/delete')
 async def _delete_map_layer(
         user_id: USER_ID_DEP,
@@ -82,8 +95,9 @@ async def _delete_map_layer(
 async def _get_all_metrics(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
+        status: MapStatusEnum | None = None,
 ):
-    data = await map_service.get_metrics()
+    data = await map_service.get_metrics(status=status)
 
     return data
 

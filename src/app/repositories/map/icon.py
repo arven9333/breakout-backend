@@ -8,7 +8,7 @@ from _logging.base import setup_logging
 from repositories.base import SQLAlchemyRepo
 from models.maps.base import Icon, IconCategory, IconMetricLevel
 from dto.request.map.icon import IconCreateDTO, IconCategoryCreateDTO
-from dto.response.map.icon import IconDTO, IconCategoryDTO, CategoryGroupedIcons, IconGroupDTO
+from dto.response.map.icon import IconDTO, IconCategoryDTO, CategoryGroupedIcons, IconGroupDTO, CategoryDTO
 
 logger = logging.getLogger(__name__)
 setup_logging(__name__)
@@ -97,6 +97,20 @@ class IconServiceRepository(SQLAlchemyRepo):
                 ]
             return None
 
+    async def get_icons_list(self) -> list[IconDTO]:
+        query = select(
+            Icon
+        )
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if icons := result.scalars():
+                return [
+                    IconDTO.from_db_model(icon)
+                    for icon in icons
+                ]
+            return []
+
     async def get_icon_by_id(self, icon_id: int) -> IconDTO | None:
         query = select(
             Icon
@@ -133,6 +147,21 @@ class IconServiceRepository(SQLAlchemyRepo):
             await session.execute(query)
             await session.flush()
 
+    async def get_categories(self, offset: int = 0, limit: int = 100) -> list[CategoryDTO]:
+        query = select(
+            IconCategory
+        ).limit(limit).offset(offset)
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if categories := result.scalars():
+                return [
+                    CategoryDTO.model_to_dto(category)
+                    for category in categories
+                ]
+            return []
+
 
 class IconLevelServiceRepository(SQLAlchemyRepo):
     async def add_icon(
@@ -140,13 +169,17 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
             coord_x: float,
             coord_y: float,
             icon_id: int,
-            map_level_id: int
+            map_level_id: int,
+            radius: float | None = None,
+            radius_color: float | None = None,
     ):
         icon = IconMetricLevel(
             coord_x=coord_x,
             coord_y=coord_y,
             icon_id=icon_id,
             map_level_id=map_level_id,
+            radius=radius,
+            radius_color=radius_color,
         )
 
         async with self.session as session:
@@ -158,6 +191,8 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
                 "coord_x": icon.coord_x,
                 "coord_y": icon.coord_y,
                 "map_level_id": icon.map_level_id,
+                "radis": icon.radius,
+                "radius_color": icon.radis_color,
             }
 
     async def delete_icon(self, icon_level_id: int):

@@ -8,7 +8,7 @@ from settings import ICONS_DIR
 from starlette.datastructures import UploadFile
 
 from dto.request.map.icon import IconCategoryCreateDTO, IconCreateDTO
-from dto.response.map.icon import IconCategoryDTO, IconDTO, CategoryGroupedIcons
+from dto.response.map.icon import IconCategoryDTO, IconDTO, CategoryGroupedIcons, CategoryDTO
 from repositories.map.icon import IconServiceRepository, IconLevelServiceRepository
 from utils.file_operations import upload_file, delete_file
 
@@ -24,6 +24,10 @@ class IconService:
 
         icon = await self.repo.add_icon(icon_create_dto)
         return icon
+
+    async def get_icons_list(self) -> list[IconDTO]:
+        icons = await self.repo.get_icons_list()
+        return icons
 
     async def add_icon_category(
             self,
@@ -76,6 +80,10 @@ class IconService:
         saved_path = await upload_file(file, path / str(category_id))
         return saved_path
 
+    async def get_categories(self, offset: int = 0, limit: int = 100) -> list[CategoryDTO]:
+        data = await self.repo.get_categories(offset=offset, limit=limit)
+        return data
+
 
 @dataclass
 class IconLevelActionsService:
@@ -86,9 +94,12 @@ class IconLevelActionsService:
             coord_x: float,
             coord_y: float,
             icon_id: int,
-            map_level_id: int
+            map_level_id: int,
+            radius: float | None = None,
+            radius_color: str | None = None,
+
     ) -> dict:
-        data = await self.repo.add_icon(coord_x, coord_y, icon_id, map_level_id)
+        data = await self.repo.add_icon(coord_x, coord_y, icon_id, map_level_id, radius, radius_color)
         return data
 
     async def delete_icon(

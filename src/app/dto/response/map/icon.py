@@ -19,6 +19,12 @@ class IconCategoryDTO(DTO):
 
 
 @dataclass
+class CategoryDTO(DTO):
+    id: int
+    name: str
+
+
+@dataclass
 class IconDTO(DTO):
     id: int
     name: str
