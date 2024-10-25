@@ -81,6 +81,6 @@ class IconMetricLevel(IconAbstract):
     map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
     map_level = relationship(MapLevel, back_populates="metrics", uselist=False)
     radius: Mapped[float] = Column(Float, nullable=True)
-    radis_color: Mapped[str] = Column(String(255), nullable=True)
+    radius_color: Mapped[str] = Column(String(255), nullable=True)
     icon = relationship(Icon, uselist=False)
 

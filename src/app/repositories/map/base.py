@@ -246,7 +246,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                                             "coord_x": icon.coord_x,
                                             "coord_y": icon.coord_y,
                                             "radius": icon.radius,
-                                            "radius_color": icon.radis_color,
+                                            "radius_color": icon.radius_color,
                                             "icon_id": icon.icon_id,
                                         }
                                         for icon in map_level.metrics

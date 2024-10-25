@@ -192,7 +192,7 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
                 "coord_y": icon.coord_y,
                 "map_level_id": icon.map_level_id,
                 "radis": icon.radius,
-                "radius_color": icon.radis_color,
+                "radius_color": icon.radius_color,
             }
 
     async def delete_icon(self, icon_level_id: int):
