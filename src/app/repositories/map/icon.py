@@ -191,7 +191,7 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
                 "coord_x": icon.coord_x,
                 "coord_y": icon.coord_y,
                 "map_level_id": icon.map_level_id,
-                "radis": icon.radius,
+                "radius": icon.radius,
                 "radius_color": icon.radius_color,
             }
 
