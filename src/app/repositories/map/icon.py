@@ -222,11 +222,9 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
             coord_y=coord_y,
             icon_id=icon_id,
             map_level_id=map_level_id,
+            radius=radius,
+            radius_color=radius_color
         )
-        if radius:
-            values['radius'] = radius
-        if radius_color:
-            values['radius_color'] = radius_color
 
         query = update(
             IconMetricLevel
