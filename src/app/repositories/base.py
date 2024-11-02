@@ -26,7 +26,6 @@ class SQLAlchemyManager:
             await self.rollback()
         else:
             await self.commit()
-            await self.flush()
 
         await self.master_session.close()
 

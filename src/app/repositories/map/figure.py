@@ -23,9 +23,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
             type: str = FigureEnum.circle,
             bold: bool = False,
     ) -> dict:
-        stmt = insert(
-            IconMetricFigure
-        ).values(
+        icon_metric_figure = IconMetricFigure(
             coord_x=coord_x,
             coord_y=coord_y,
             color=color,
@@ -33,11 +31,13 @@ class FigureServiceRepository(SQLAlchemyRepo):
             type=type,
             map_level_id=map_level_id,
             bold=bold
-        ).returning(IconMetricFigure)
+        )
 
         async with self.session as session:
-            res = await session.execute(stmt)
-            icon_metric_figure = res.scalar_one()
+            await session.add(icon_metric_figure)
+
+            await session.flush()
+
             data = {
                 "id": icon_metric_figure.id,
                 "map_level_id": icon_metric_figure.map_level_id,
@@ -93,30 +93,16 @@ class FigureServiceRepository(SQLAlchemyRepo):
             }
         return data
 
-    async def delete(self, icon_metric_figure_id: int) -> dict:
-        stmt = delete(
+    async def delete_figure(self, icon_metric_figure_id: int) -> None:
+        query = delete(
             IconMetricFigure
         ).where(
-            IconMetricFigure.id == icon_metric_figure_id
-        ).returning(
-            IconMetricFigure
+            IconMetricFigure.id == icon_metric_figure_id,
         )
-        data = None
-        async with self.session as session:
-            res = await session.execute(stmt)
 
-            icon_metric_figure = res.scalar_one()
-            data = {
-                "icon_metric_figure_id": icon_metric_figure.id,
-                "map_level_id": icon_metric_figure.map_level_id,
-                "coord_x": icon_metric_figure.coord_x,
-                "coord_y": icon_metric_figure.coord_y,
-                "color": icon_metric_figure.color,
-                "content": icon_metric_figure.content,
-                "type": icon_metric_figure.type,
-                "bold": icon_metric_figure.bold,
-            }
-        return data
+        async with self.session as session:
+            await session.execute(query)
+            await session.flush()
 
     async def get_figure_by_id(self, icon_metric_figure_id: int) -> dict | None:
         stmt = select(

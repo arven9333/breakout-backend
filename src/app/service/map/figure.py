@@ -76,7 +76,7 @@ class FigureService:
             icon_metric_figure_id=icon_metric_figure_id
         )
         if has_figure is not None:
-            deleted = await self.repo.delete(icon_metric_figure_id)
+            deleted = await self.repo.delete_figure(icon_metric_figure_id)
             return deleted
         return
 

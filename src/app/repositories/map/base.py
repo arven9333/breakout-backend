@@ -35,15 +35,17 @@ class MapServiceRepository(SQLAlchemyRepo):
             user_id=user_id,
             status=status,
         )
+        data = None
         async with self.session as session:
             await session.add(map)
             await session.flush()
 
-            return {
+            data = {
                 "id": map.id,
                 "name": name,
                 "status": map.status,
             }
+        return data
 
     async def get_map_by_id(self, map_id: int):
         query = select(
@@ -51,17 +53,17 @@ class MapServiceRepository(SQLAlchemyRepo):
         ).where(
             Map.id == map_id
         )
-
+        data = None
         async with self.session as session:
             result = await session.execute(query)
 
             if map := result.scalar_one():
-                return {
+                data = {
                     "id": map.id,
                     "name": map.name,
                     "status": map.status,
                 }
-            return
+        return data
 
     async def delete_map(self, map_id: int):
         query = delete(
@@ -80,18 +82,20 @@ class MapServiceRepository(SQLAlchemyRepo):
         ).values(
             status=status,
         ).where(
-            Map.id==map_id
+            Map.id == map_id
         ).returning(Map)
+
+        data = None
 
         async with self.session as session:
             result = await session.execute(query)
             if map := result.scalar_one():
-                return {
+                data = {
                     "id": map.id,
                     "name": map.name,
                     "status": map.status,
                 }
-            return
+        return data
 
     async def add_map_level(
             self,
@@ -103,26 +107,28 @@ class MapServiceRepository(SQLAlchemyRepo):
             map_layer_id=map_layer_id,
             level=level,
         )
+        data = None
         async with self.session as session:
             await session.add(map_level)
             await session.flush()
 
-            return {
+            data = {
                 "id": map_level.id,
                 "level": map_level.level.value,
                 "map_layer_id": map_level.map_layer_id,
             }
+        return data
 
     async def create_map_layer(self, map_id: int):
         map_layer = MapLayer(
             map_id=map_id
         )
-
+        data = None
         async with self.session as session:
             await session.add(map_layer)
             await session.flush()
 
-            return {
+            data = {
                 "id": map_layer.id,
                 "map_id": map_layer.map_id,
                 "height": map_layer.height,
@@ -132,6 +138,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                     map_layer_id=map_layer.id
                 )
             }
+        return data
 
     async def map_layer_update_height_width(self, map_layer_id: int, height: int, width: int):
         query = update(
@@ -142,12 +149,12 @@ class MapServiceRepository(SQLAlchemyRepo):
         ).where(
             MapLayer.id == map_layer_id
         ).returning(MapLayer)
-
+        data = None
         async with self.session as session:
             result = await session.execute(query)
 
             if map_layer := result.scalar_one():
-                return {
+                data = {
                     "id": map_layer.id,
                     "map_id": map_layer.map_id,
                     "height": map_layer.height,
@@ -157,7 +164,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                         map_layer_id=map_layer.id
                     )
                 }
-            return
+        return data
 
     async def get_map_layer_by_id(self, map_layer_id: int):
 
@@ -166,12 +173,13 @@ class MapServiceRepository(SQLAlchemyRepo):
         ).where(
             MapLayer.id == map_layer_id
         )
+        data = None
 
         async with self.session as session:
             result = await session.execute(query)
 
             if map_layer := result.scalar_one():
-                return {
+                data = {
                     "id": map_layer.id,
                     "map_id": map_layer.map_id,
                     "height": map_layer.height,
@@ -181,7 +189,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                         map_layer_id=map_layer.id
                     )
                 }
-            return
+        return data
 
     async def delete_map_layer(self, map_layer_id: int):
         query = delete(
@@ -217,6 +225,13 @@ class MapServiceRepository(SQLAlchemyRepo):
                 MapLevel.metrics
             ).joinedload(
                 IconMetricLevel.icon
+            ),
+            joinedload(
+                Map.map_layers
+            ).joinedload(
+                MapLayer.map_levels
+            ).joinedload(
+                MapLevel.figures
             )
 
         ).order_by(
@@ -228,7 +243,7 @@ class MapServiceRepository(SQLAlchemyRepo):
 
             maps = result.unique().scalars().all()
 
-            return [
+            data = [
                 {
                     "map_id": map.id,
                     "name": map.name,
@@ -257,13 +272,13 @@ class MapServiceRepository(SQLAlchemyRepo):
                                     ],
                                     "figures": [
                                         {
-                                            "icon_metric_figure_id": figure.id,
+                                            "id": figure.id,
                                             "map_level_id": figure.map_level_id,
                                             "coord_x": figure.coord_x,
                                             "coord_y": figure.coord_y,
                                             "color": figure.color,
                                             "content": figure.content,
-                                            "type": figure.type.value,
+                                            "type": figure.type,
                                             "bold": figure.bold,
                                         }
                                         for figure in map_level.figures
@@ -277,3 +292,4 @@ class MapServiceRepository(SQLAlchemyRepo):
                 }
                 for map in maps
             ]
+        return data

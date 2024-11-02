@@ -7,7 +7,6 @@ class ActionEnum(str, Enum):
     delete = "delete"
 
 
-
 class ModelEnum(str, Enum):
     icon_metric_level = "icon_metric_level"
     icon_metric_figure = "icon_metric_figure"
