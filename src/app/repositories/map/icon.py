@@ -213,16 +213,27 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
             coord_y: float,
             icon_id: int,
             map_level_id: int,
+            radius: int | None = None,
+            radius_color: str | None = None,
     ):
+
+        values = dict(
+            coord_x=coord_x,
+            coord_y=coord_y,
+            icon_id=icon_id,
+            map_level_id=map_level_id,
+        )
+        if radius:
+            values['radius'] = radius_color
+        if radius_color:
+            values['radius_color'] = radius_color
+
         query = update(
             IconMetricLevel
         ).where(
             IconMetricLevel.id == icon_level_id
         ).values(
-            coord_x=coord_x,
-            coord_y=coord_y,
-            icon_id=icon_id,
-            map_level_id=map_level_id,
+            **values
         )
 
         async with self.session as session:

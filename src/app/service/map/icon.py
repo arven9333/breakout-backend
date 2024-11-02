@@ -115,6 +115,8 @@ class IconLevelActionsService:
             coord_y: float,
             icon_id: int,
             map_level_id: int,
+            radius: int | None = None,
+            radius_color: str | None = None,
 
     ):
         await self.repo.update_icon(
@@ -123,6 +125,8 @@ class IconLevelActionsService:
             coord_y=coord_y,
             icon_id=icon_id,
             map_level_id=map_level_id,
+            radius=radius,
+            radius_color=radius_color,
         )
 
 
