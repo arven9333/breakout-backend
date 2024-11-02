@@ -14,7 +14,7 @@ from utils.file_operations import upload_file, delete_file
 
 
 @dataclass
-class IconService:
+class FigureService:
     repo: IconServiceRepository
 
     async def add_icon(self, icon_create_dto: IconCreateDTO) -> IconDTO:
