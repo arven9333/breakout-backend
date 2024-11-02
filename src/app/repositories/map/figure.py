@@ -1,7 +1,6 @@
 import logging
 
 from sqlalchemy import select, delete, update, insert
-from sqlalchemy.orm import joinedload
 
 from _logging.base import setup_logging
 from enums.figure import FigureEnum
@@ -38,10 +37,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
 
         async with self.session as session:
             res = await session.execute(stmt)
-            await session.flush()
-            await session.commit()
             icon_metric_figure = res.scalar_one()
-            return {
+            data = {
                 "id": icon_metric_figure.id,
                 "map_level_id": icon_metric_figure.map_level_id,
                 "coord_x": icon_metric_figure.coord_x,
@@ -51,6 +48,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "type": icon_metric_figure.type,
                 "bold": icon_metric_figure.bold,
             }
+        return data
 
     async def update_figure(
             self,
@@ -78,12 +76,12 @@ class FigureServiceRepository(SQLAlchemyRepo):
             IconMetricFigure.id == icon_metric_figure_id,
         ).returning(IconMetricFigure)
 
+        data = None
         async with self.session as session:
             res = await session.execute(stmt)
-            await session.flush()
-            await session.commit()
+
             icon_metric_figure = res.scalar_one()
-            return {
+            data = {
                 "icon_metric_figure_id": icon_metric_figure.id,
                 "map_level_id": icon_metric_figure.map_level_id,
                 "coord_x": icon_metric_figure.coord_x,
@@ -93,6 +91,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "type": icon_metric_figure.type,
                 "bold": icon_metric_figure.bold,
             }
+        return data
 
     async def delete(self, icon_metric_figure_id: int) -> dict:
         stmt = delete(
@@ -102,13 +101,12 @@ class FigureServiceRepository(SQLAlchemyRepo):
         ).returning(
             IconMetricFigure
         )
-
+        data = None
         async with self.session as session:
             res = await session.execute(stmt)
-            await session.flush()
-            await session.commit()
+
             icon_metric_figure = res.scalar_one()
-            return {
+            data = {
                 "icon_metric_figure_id": icon_metric_figure.id,
                 "map_level_id": icon_metric_figure.map_level_id,
                 "coord_x": icon_metric_figure.coord_x,
@@ -118,6 +116,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "type": icon_metric_figure.type,
                 "bold": icon_metric_figure.bold,
             }
+        return data
 
     async def get_figure_by_id(self, icon_metric_figure_id: int) -> dict | None:
         stmt = select(
@@ -125,12 +124,12 @@ class FigureServiceRepository(SQLAlchemyRepo):
         ).where(
             IconMetricFigure.id == icon_metric_figure_id
         )
-
+        data = None
         async with self.session as session:
             res = await session.execute(stmt)
             icon_metric_figure = res.scalar_one_or_none()
             if icon_metric_figure is not None:
-                return {
+                data = {
                     "icon_metric_figure_id": icon_metric_figure.id,
                     "map_level_id": icon_metric_figure.map_level_id,
                     "coord_x": icon_metric_figure.coord_x,
@@ -140,4 +139,4 @@ class FigureServiceRepository(SQLAlchemyRepo):
                     "type": icon_metric_figure.type,
                     "bold": icon_metric_figure.bold,
                 }
-        return
+        return data

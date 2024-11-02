@@ -20,5 +20,11 @@ async def get_icon_level_repository(session: MasterSessionMakerDep):
     )
 
 
+async def get_icon_figure_repository(session: MasterSessionMakerDep):
+    return IconLevelServiceRepository(
+        session=session
+    )
+
+
 ICON_REPOSITORY = Annotated[IconServiceRepository, Depends(get_icon_repository)]
 ICON_LEVEL_REPOSITORY = Annotated[IconLevelServiceRepository, Depends(get_icon_level_repository)]

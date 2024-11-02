@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from dependencies.map.fiigure import ICON_FIGURE_SERVICE_DEP
 from service.map.icon import (
     IconService,
     IconLevelActionsService,
@@ -25,16 +26,17 @@ async def get_icon_level_service(repository: ICON_LEVEL_REPOSITORY):
         repo=repository
     )
 
-
 ICON_SERVICE_DEP = Annotated[IconService, Depends(get_icon_service)]
 ICON_LEVEL_SERVICE_DEP = Annotated[IconLevelActionsService, Depends(get_icon_level_service)]
 
 
 async def get_icon_total_service(
         level_service: ICON_LEVEL_SERVICE_DEP,
+        figure_service: ICON_FIGURE_SERVICE_DEP
 ):
     return ActionsHandleService(
         icon_level_service=level_service,
+        icon_metric_figure_service=figure_service
     )
 
 

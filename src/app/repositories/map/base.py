@@ -263,7 +263,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                                             "coord_y": figure.coord_y,
                                             "color": figure.color,
                                             "content": figure.content,
-                                            "type": figure.type,
+                                            "type": figure.type.value,
                                             "bold": figure.bold,
                                         }
                                         for figure in map_level.figures
