@@ -224,7 +224,7 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
             map_level_id=map_level_id,
         )
         if radius:
-            values['radius'] = radius_color
+            values['radius'] = radius
         if radius_color:
             values['radius_color'] = radius_color
 
