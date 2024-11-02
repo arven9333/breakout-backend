@@ -2,7 +2,7 @@ from settings import MAPS_DIR
 from dataclasses import dataclass
 from enums.map import MapLevelEnum, MapStatusEnum
 from repositories.map.base import MapServiceRepository
-from service.map.icon import delete_file
+from utils.file_operations import delete_file
 
 from utils.image_to_tiles import generate_tiles
 

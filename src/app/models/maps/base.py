@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float, Integer
+from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float, Integer, Boolean
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
+from enums.figure import FigureEnum
 from enums.map import MapLevelEnum, MapStatusEnum
 from models.base import BaseModel, Column
 from models.common.base import CascadeForeignKey, RestrictForeignKey
@@ -45,6 +46,7 @@ class MapLevel(BaseModel):
 
     map_layer = relationship("MapLayer", back_populates="map_levels", uselist=False)
     metrics = relationship("IconMetricLevel", back_populates="map_level", uselist=True)
+    figures = relationship("IconMetricFigure", back_populates="map_level", uselist=True)
 
 
 class IconCategory(BaseModel):
@@ -83,4 +85,20 @@ class IconMetricLevel(IconAbstract):
     radius: Mapped[float] = Column(Float, nullable=True)
     radius_color: Mapped[str] = Column(String(255), nullable=True)
     icon = relationship(Icon, uselist=False)
+
+
+class IconMetricFigure(BaseModel):
+    __tablename__ = "icon_metric_figure"
+
+    id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False)
+    map_level_id: Mapped[int] = Column(BigInteger, CascadeForeignKey(MapLevel.id))
+
+    coord_x: Mapped[float] = Column(Float)
+    coord_y: Mapped[float] = Column(Float)
+    color: Mapped[str] = Column(String)
+    content: Mapped[str] = Column(String)
+    type: Mapped[FigureEnum] = Column(Enum(FigureEnum))
+    bold: Mapped[bool] = Column(Boolean, default=False)
+
+    map_level = relationship(MapLevel, back_populates="figures", uselist=False)
 
