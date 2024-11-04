@@ -9,7 +9,7 @@ from _logging.base import setup_logging
 from enums.map import MapLevelEnum, MapStatusEnum
 
 from repositories.base import SQLAlchemyRepo
-from models.maps.base import Map, MapLevel, MapLayer, IconMetricLevel
+from models.maps.base import Map, MapLevel, MapLayer, IconMetricLevel, Icon
 
 logger = logging.getLogger(__name__)
 setup_logging(__name__)
@@ -225,7 +225,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 MapLevel.metrics
             ).joinedload(
                 IconMetricLevel.icon
-            ),
+            ).joinedload(Icon.category),
             joinedload(
                 Map.map_layers
             ).joinedload(
@@ -267,6 +267,10 @@ class MapServiceRepository(SQLAlchemyRepo):
                                             "radius_color": icon.radius_color,
                                             "icon_id": icon.icon_id,
                                             "image": icon.icon.image,
+                                            "category": {
+                                                "id": icon.icon.category.id,
+                                                "name": icon.icon.category.name,
+                                            }
                                         }
                                         for icon in map_level.metrics
                                     ],
