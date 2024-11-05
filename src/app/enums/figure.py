@@ -8,3 +8,4 @@ class FigureEnum(str, Enum):
     pencil = "pencil"
     marker = "marker"
     text = "text"
+    polyline = "polyline"
