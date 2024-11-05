@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float, Integer, Boolean
 from sqlalchemy.orm import Mapped, relationship, mapped_column
+from sqlalchemy.dialects.postgresql import JSONB
 
 from enums.figure import FigureEnum
 from enums.map import MapLevelEnum, MapStatusEnum
 from models.base import BaseModel, Column
 from models.common.base import CascadeForeignKey, RestrictForeignKey
 from models.user.base import User
+
 
 
 class Map(BaseModel):
@@ -98,7 +100,7 @@ class IconMetricFigure(BaseModel):
     color: Mapped[str] = Column(String)
     content: Mapped[str] = Column(String)
     type: Mapped[FigureEnum] = Column(Enum(FigureEnum))
-    bold: Mapped[bool] = Column(Boolean, default=False)
-
+    bounds: Mapped[dict] = Column(JSONB, nullable=True)
+    latlngs: Mapped[dict] = Column(JSONB, nullable=True)
     map_level = relationship(MapLevel, back_populates="figures", uselist=False)
 

@@ -215,6 +215,7 @@ class IconLevelServiceRepository(SQLAlchemyRepo):
             map_level_id: int,
             radius: int | None = None,
             radius_color: str | None = None,
+
     ):
 
         values = dict(

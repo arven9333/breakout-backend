@@ -26,7 +26,8 @@ class FigureService:
             content: str,
             map_level_id: int,
             type: str = FigureEnum.circle,
-            bold: bool = False,
+            bounds: list | dict | None = None,
+            latlngs: list | dict | None = None,
     ) -> dict:
 
         figure = await self.repo.add_figure(
@@ -36,7 +37,8 @@ class FigureService:
             content=content,
             type=type,
             map_level_id=map_level_id,
-            bold=bold
+            bounds=bounds,
+            latlngs=latlngs
         )
         return figure
 
@@ -49,14 +51,14 @@ class FigureService:
             content: str,
             map_level_id: int,
             type: str = FigureEnum.circle,
-            bold: int = 0,
+            bounds: list | dict | None = None,
+            latlngs: list | dict | None = None,
     ) -> dict | None:
 
         has_figure = await self.repo.get_figure_by_id(
             icon_metric_figure_id=icon_metric_figure_id
         )
         if has_figure is not None:
-            bold = bool(bold) if bold in (0, 1) else False
 
             figure = await self.repo.update_figure(
                 icon_metric_figure_id=icon_metric_figure_id,
@@ -66,7 +68,8 @@ class FigureService:
                 content=content,
                 type=type,
                 map_level_id=map_level_id,
-                bold=bold
+                bounds=bounds,
+                latlngs=latlngs
             )
             return figure
         return

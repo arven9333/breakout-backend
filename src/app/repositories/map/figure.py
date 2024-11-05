@@ -21,7 +21,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
             content: str,
             map_level_id: int,
             type: str = FigureEnum.circle,
-            bold: bool = False,
+            bounds: dict | None = None,
+            latlngs: dict | None = None,
     ) -> dict:
         icon_metric_figure = IconMetricFigure(
             coord_x=coord_x,
@@ -30,7 +31,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
             content=content,
             type=type,
             map_level_id=map_level_id,
-            bold=bold
+            bounds=bounds,
+            latlngs=latlngs
         )
 
         async with self.session as session:
@@ -46,7 +48,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "color": icon_metric_figure.color,
                 "content": icon_metric_figure.content,
                 "type": icon_metric_figure.type,
-                "bold": icon_metric_figure.bold,
+                "bounds": icon_metric_figure.bounds,
+                "latlngs": icon_metric_figure.latlngs,
             }
         return data
 
@@ -59,7 +62,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
             content: str,
             map_level_id: int,
             type: str = FigureEnum.circle,
-            bold: bool = False,
+            bounds: dict | None = None,
+            latlngs: dict | None = None,
 
     ) -> dict:
         stmt = update(
@@ -71,7 +75,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
             content=content,
             type=type,
             map_level_id=map_level_id,
-            bold=bold
+            bounds=bounds,
+            latlngs=latlngs
         ).where(
             IconMetricFigure.id == icon_metric_figure_id,
         ).returning(IconMetricFigure)
@@ -89,7 +94,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "color": icon_metric_figure.color,
                 "content": icon_metric_figure.content,
                 "type": icon_metric_figure.type,
-                "bold": icon_metric_figure.bold,
+                "bounds": icon_metric_figure.bounds,
+                "latlngs": icon_metric_figure.latlngs,
             }
         return data
 
@@ -123,6 +129,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
                     "color": icon_metric_figure.color,
                     "content": icon_metric_figure.content,
                     "type": icon_metric_figure.type,
-                    "bold": icon_metric_figure.bold,
+                    "bounds": icon_metric_figure.bounds,
+                    "latlngs": icon_metric_figure.latlngs,
                 }
         return data

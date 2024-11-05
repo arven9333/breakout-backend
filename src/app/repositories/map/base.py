@@ -276,14 +276,15 @@ class MapServiceRepository(SQLAlchemyRepo):
                                     ],
                                     "figures": [
                                         {
-                                            "id": figure.id,
+                                            "icon_metric_figure_id": figure.id,
                                             "map_level_id": figure.map_level_id,
                                             "coord_x": figure.coord_x,
                                             "coord_y": figure.coord_y,
                                             "color": figure.color,
                                             "content": figure.content,
                                             "type": figure.type,
-                                            "bold": figure.bold,
+                                            "bounds": figure.bounds,
+                                            "latlngs": figure.latlngs,
                                         }
                                         for figure in map_level.figures
                                     ]
