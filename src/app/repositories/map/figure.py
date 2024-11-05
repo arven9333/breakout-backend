@@ -15,12 +15,14 @@ setup_logging(__name__)
 class FigureServiceRepository(SQLAlchemyRepo):
     async def add_figure(
             self,
-            coord_x: float,
-            coord_y: float,
-            color: str,
-            content: str,
             map_level_id: int,
-            type: str = FigureEnum.circle,
+            coord_x: float | None = None,
+            coord_y: float | None = None,
+            color: str | None = None,
+            content: str | None = None,
+            type: str | None = None,
+            radius: float | None = None,
+            radius_color: float | None = None,
             bounds: dict | None = None,
             latlngs: dict | None = None,
     ) -> dict:
@@ -32,7 +34,9 @@ class FigureServiceRepository(SQLAlchemyRepo):
             type=type,
             map_level_id=map_level_id,
             bounds=bounds,
-            latlngs=latlngs
+            latlngs=latlngs,
+            radius=radius,
+            radius_color=radius_color
         )
 
         async with self.session as session:
@@ -50,18 +54,22 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "type": icon_metric_figure.type,
                 "bounds": icon_metric_figure.bounds,
                 "latlngs": icon_metric_figure.latlngs,
+                "radius": icon_metric_figure.radius,
+                "radius_color": icon_metric_figure.radius_color,
             }
         return data
 
     async def update_figure(
             self,
             icon_metric_figure_id: int,
-            coord_x: float,
-            coord_y: float,
-            color: str,
-            content: str,
             map_level_id: int,
-            type: str = FigureEnum.circle,
+            coord_x: float | None = None,
+            coord_y: float | None = None,
+            color: str | None = None,
+            content: str | None = None,
+            type: str | None = None,
+            radius: float | None = None,
+            radius_color: float | None = None,
             bounds: dict | None = None,
             latlngs: dict | None = None,
 
@@ -76,7 +84,9 @@ class FigureServiceRepository(SQLAlchemyRepo):
             type=type,
             map_level_id=map_level_id,
             bounds=bounds,
-            latlngs=latlngs
+            latlngs=latlngs,
+            radius=radius,
+            radius_color=radius_color
         ).where(
             IconMetricFigure.id == icon_metric_figure_id,
         ).returning(IconMetricFigure)
@@ -96,6 +106,8 @@ class FigureServiceRepository(SQLAlchemyRepo):
                 "type": icon_metric_figure.type,
                 "bounds": icon_metric_figure.bounds,
                 "latlngs": icon_metric_figure.latlngs,
+                "radius": icon_metric_figure.radius,
+                "radius_color": icon_metric_figure.radius_color,
             }
         return data
 
@@ -131,5 +143,7 @@ class FigureServiceRepository(SQLAlchemyRepo):
                     "type": icon_metric_figure.type,
                     "bounds": icon_metric_figure.bounds,
                     "latlngs": icon_metric_figure.latlngs,
+                    "radius": icon_metric_figure.radius,
+                    "radius_color": icon_metric_figure.radius_color,
                 }
         return data

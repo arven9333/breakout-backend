@@ -285,6 +285,8 @@ class MapServiceRepository(SQLAlchemyRepo):
                                             "type": figure.type,
                                             "bounds": figure.bounds,
                                             "latlngs": figure.latlngs,
+                                            "radius": figure.radius,
+                                            "radius_color": figure.radius_color,
                                         }
                                         for figure in map_level.figures
                                     ]

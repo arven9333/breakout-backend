@@ -20,14 +20,16 @@ class FigureService:
 
     async def add_figure(
             self,
-            coord_x: float,
-            coord_y: float,
-            color: str,
-            content: str,
             map_level_id: int,
-            type: str = FigureEnum.circle,
-            bounds: list | dict | None = None,
-            latlngs: list | dict | None = None,
+            coord_x: float | None = None,
+            coord_y: float | None = None,
+            color: str | None = None,
+            content: str | None = None,
+            type: str | None = None,
+            radius: float | None = None,
+            radius_color: float | None = None,
+            bounds: dict | None = None,
+            latlngs: dict | None = None,
     ) -> dict:
 
         figure = await self.repo.add_figure(
@@ -38,21 +40,25 @@ class FigureService:
             type=type,
             map_level_id=map_level_id,
             bounds=bounds,
-            latlngs=latlngs
+            latlngs=latlngs,
+            radius=radius,
+            radius_color=radius_color
         )
         return figure
 
     async def update_figure(
             self,
             icon_metric_figure_id: int,
-            coord_x: float,
-            coord_y: float,
-            color: str,
-            content: str,
             map_level_id: int,
-            type: str = FigureEnum.circle,
-            bounds: list | dict | None = None,
-            latlngs: list | dict | None = None,
+            coord_x: float | None = None,
+            coord_y: float | None = None,
+            color: str | None = None,
+            content: str | None = None,
+            type: str | None = None,
+            radius: float | None = None,
+            radius_color: float | None = None,
+            bounds: dict | None = None,
+            latlngs: dict | None = None,
     ) -> dict | None:
 
         has_figure = await self.repo.get_figure_by_id(
@@ -69,7 +75,10 @@ class FigureService:
                 type=type,
                 map_level_id=map_level_id,
                 bounds=bounds,
-                latlngs=latlngs
+                latlngs=latlngs,
+                radius=radius,
+                radius_color=radius_color,
+
             )
             return figure
         return
