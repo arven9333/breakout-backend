@@ -91,7 +91,7 @@ async def _delete_map_layer(
     }
 
 
-@router.post('mapLayer/update')
+@router.post('/mapLayer/update')
 async def _update_map_layer(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
