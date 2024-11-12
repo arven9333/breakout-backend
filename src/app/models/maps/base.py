@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy import BigInteger, String, Enum, UniqueConstraint, Float, Integer, Boolean
 from sqlalchemy.orm import Mapped, relationship, mapped_column
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 
 from enums.figure import FigureEnum
 from enums.map import MapLevelEnum, MapStatusEnum
@@ -30,11 +30,12 @@ class MapLayer(BaseModel):
 
     height: Mapped[int] = Column(BigInteger, default=0, nullable=True)
     width: Mapped[int] = Column(BigInteger, default=0, nullable=True)
-    center: Mapped[dict] = Column(
-        JSON,
-        nullable=True,
-        server_default="{}",
-        comment="центровка",
+    center: Mapped[list] = Column(
+        JSONB,
+        nullable=False,
+        default_factory=list,
+        server_default="[]",
+        comment="json ответа",
     )
 
     map = relationship(Map, back_populates="map_layers", uselist=False)
