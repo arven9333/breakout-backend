@@ -99,7 +99,8 @@ async def _update_map_layer(
         center: list[str, int, dict]
 
 ):
-    map_layer = await map_service.update_map_layer()
+    map_layer = await map_service.update_map_layer(center, map_layer_id)
+    return map_layer
 
 
 @router.get('/allMetrics')

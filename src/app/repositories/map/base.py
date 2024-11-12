@@ -167,7 +167,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                 }
         return data
 
-    async def update_map_layer(self, center: dict, map_layer_id: int):
+    async def update_map_layer(self, center: list, map_layer_id: int):
         query = update(
             MapLayer
         ).values(
