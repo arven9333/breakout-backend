@@ -73,7 +73,7 @@ async def _update_map(
         map_id: int,
         status: MapStatusEnum,
 ):
-    await map_service.update_map(map_id=map_id, status=status,)
+    await map_service.update_map(map_id=map_id, status=status, )
     return {
         "success": 1
     }
@@ -89,6 +89,17 @@ async def _delete_map_layer(
     return {
         "success": 1
     }
+
+
+@router.post('mapLayer/update')
+async def _update_map_layer(
+        user_id: USER_ID_DEP,
+        map_service: MAP_SERVICE_DEP,
+        map_layer_id: int,
+        center: list[str, int, dict]
+
+):
+    map_layer = await map_service.update_map_layer()
 
 
 @router.get('/allMetrics')

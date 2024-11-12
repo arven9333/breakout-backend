@@ -162,7 +162,34 @@ class MapServiceRepository(SQLAlchemyRepo):
                     "leaflet_path": await self.get_map_layer_leaflet_path(
                         map_id=map_layer.map_id,
                         map_layer_id=map_layer.id
-                    )
+                    ),
+                    "center": map_layer.center,
+                }
+        return data
+
+    async def update_map_layer(self, center: dict, map_layer_id: int):
+        query = update(
+            MapLayer
+        ).values(
+            center=center,
+        ).where(
+            MapLayer.id == map_layer_id
+        ).returning(MapLayer)
+
+        async with self.session as session:
+            result = await session.execute(query)
+
+            if map_layer := result.scalar_one():
+                data = {
+                    "id": map_layer.id,
+                    "map_id": map_layer.map_id,
+                    "height": map_layer.height,
+                    "width": map_layer.width,
+                    "leaflet_path": await self.get_map_layer_leaflet_path(
+                        map_id=map_layer.map_id,
+                        map_layer_id=map_layer.id
+                    ),
+                    "center": map_layer.center,
                 }
         return data
 
@@ -255,6 +282,7 @@ class MapServiceRepository(SQLAlchemyRepo):
                             "width": layer.width,
                             "leaflet_path": str(MAPS_DIR / str(map.id) / str(layer.id) / 'tiles').split(str(SRC_DIR))[
                                                 -1][1:],
+                            "center": layer.center,
                             "levels": {
                                 map_level.level.value: {
                                     "map_level_id": map_level.id,

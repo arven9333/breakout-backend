@@ -49,7 +49,8 @@ class MapService:
         if map_layer is not None:
             await delete_file(MAPS_DIR / str(map_layer['map_id']) / str(map_layer['id']))
             await self.repo.delete_map_layer(map_layer_id)
-
+    async def update_map_layer(self, center: dict):
+        map_player = await self.repo
     async def delete_map(self, map_id: int):
 
         map = await self.repo.get_map_by_id(map_id)

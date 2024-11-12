@@ -11,7 +11,6 @@ from models.common.base import CascadeForeignKey, RestrictForeignKey
 from models.user.base import User
 
 
-
 class Map(BaseModel):
     __tablename__ = 'maps'
 
@@ -31,6 +30,11 @@ class MapLayer(BaseModel):
 
     height: Mapped[int] = Column(BigInteger, default=0, nullable=True)
     width: Mapped[int] = Column(BigInteger, default=0, nullable=True)
+    center: Mapped[list] = Column(
+        JSONB,
+        nullable=True,
+        comment="центровка",
+    )
 
     map = relationship(Map, back_populates="map_layers", uselist=False)
     map_levels = relationship("MapLevel", back_populates="map_layer", uselist=True)
@@ -105,4 +109,3 @@ class IconMetricFigure(BaseModel):
     radius: Mapped[float] = Column(Float, nullable=True)
     radius_color: Mapped[str] = Column(String(255), nullable=True)
     map_level = relationship(MapLevel, back_populates="figures", uselist=False)
-
