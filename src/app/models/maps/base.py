@@ -33,7 +33,7 @@ class MapLayer(BaseModel):
     center: Mapped[dict] = Column(
         JSON,
         nullable=True,
-        server_default=None,
+        server_default="{}",
         comment="центровка",
     )
 
