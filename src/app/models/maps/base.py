@@ -30,7 +30,7 @@ class MapLayer(BaseModel):
 
     height: Mapped[int] = Column(BigInteger, default=0, nullable=True)
     width: Mapped[int] = Column(BigInteger, default=0, nullable=True)
-    center: Mapped[list] = Column(
+    center: Mapped[dict] = Column(
         JSONB,
         nullable=True,
         comment="центровка",
