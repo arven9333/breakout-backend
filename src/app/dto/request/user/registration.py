@@ -1,5 +1,7 @@
 from dto.base import DTO
 from dataclasses import dataclass
+
+from enums.roles import UserRole
 from models.user.base import User
 from passlib.hash import bcrypt
 
@@ -35,6 +37,7 @@ class UserDTO(DTO):
     email: str
     username: str
     is_active: bool
+    role: str | None
 
     @classmethod
     def from_db_model(cls, user: User):
@@ -43,6 +46,7 @@ class UserDTO(DTO):
             email=user.email,
             username=user.username,
             is_active=user.is_active,
+            role=user.role
         )
 
 
@@ -57,5 +61,6 @@ class UserDBDTO(UserDTO):
             email=user.email,
             username=user.username,
             is_active=user.is_active,
-            password=user.password
+            password=user.password,
+            role=user.role
         )
