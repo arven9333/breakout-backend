@@ -23,7 +23,7 @@ class User(BaseModel, TsMixin):
 
     password: Mapped[str] = Column(String(255), init=False, nullable=False, comment='password')
     is_active: Mapped[bool] = Column(Boolean, init=False, default=False, nullable=False, comment='deleted')
-    role: [Mapped[str]] = Column(String(127), init=False, server_default=UserRole.default.value)
+    role: Mapped[str] = Column(String(127), init=False, server_default=UserRole.default.value)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
