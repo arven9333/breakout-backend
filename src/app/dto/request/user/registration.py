@@ -6,17 +6,27 @@ from passlib.hash import bcrypt
 
 @dataclass
 class UserCreateDTO(DTO):
-    email: str
     username: str
     password: str
     verified_password: str
+    email: str | None = None
+    external_id: int | None = None
 
     def get_user_db_create(self):
         return {
             "email": self.email,
             "username": self.username,
             "password": bcrypt.hash(self.password),
+            "external_id": self.external_id,
         }
+
+
+@dataclass
+class UserUpdateDTO(DTO):
+    username: str | None = None
+    password: str | None = None
+    email: str | None = None
+    external_id: str | None = None
 
 
 @dataclass

@@ -66,10 +66,40 @@ class Settings(BaseSettings):
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+LOCAL_HOST = os.getenv("LOCAL_HOST", "http://localhost:8000")
+
+FRONT_HOST = os.getenv("FRONT_HOST", "http://localhost:3000")
+FRONT_LOGIN_PAGE = FRONT_HOST + "/auth/login"
+FRONT_FORGET_PASSWORD_URL = FRONT_HOST + "/auth/login"
+
+REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_DB = int(os.getenv("REDIS_DB", "1"))
+
+
 SRC_DIR = BASE_DIR / 'src'
 IMAGES_DIR = SRC_DIR / 'images'
 ICONS_DIR = IMAGES_DIR / 'icons'
 MAPS_DIR = IMAGES_DIR / 'maps'
+
+TWITCH_LINK_OAUTH = "https://id.twitch.tv/oauth2/authorize"
+TWITCH_CLIENT_ID = os.getenv("TWITCH_CLIENT_ID", "some_twitch_key")
+TWITCH_SECRET = os.getenv("TWITCH_SECRET", "some_twitch_key")
+
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "some_google_key")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "some_google_key")
+
+ENDPOINT_CALLBACK = "api/v1/user/auth/callback"
+GOOGLE_REDIRECT_URL = f"{LOCAL_HOST}/{ENDPOINT_CALLBACK}/google/handle"
+
+TWITCH_REDIRECT_LINK = f"{TWITCH_LINK_OAUTH}?response_type=token&client_id={TWITCH_CLIENT_ID}"
+GOOGLE_REDIRECT_LINK = f"https://accounts.google.com/o/oauth2/auth?client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URL}&response_type=code&scope=openid email profile"
+
+EMAIL = os.getenv("EMAIL", "your_email@gmail.com")
+EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "your_password")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
+
 
 if load_dotenv(str(BASE_DIR / '.env')) is False:
     raise AssertionError(f"File .env not found, search directory: {BASE_DIR / '.env'}")

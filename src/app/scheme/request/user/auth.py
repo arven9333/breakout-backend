@@ -2,5 +2,6 @@ from pydantic import BaseModel
 
 
 class TokenGetScheme(BaseModel):
-    email: str
+    subject: str
     password: str
+

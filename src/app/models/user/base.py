@@ -15,9 +15,9 @@ class User(BaseModel, TsMixin):
     )
 
     id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True, init=False, nullable=False, comment='user id')
-
+    external_id: Mapped[int] = Column(BigInteger, init=False, nullable=True, unique=True)
     username: Mapped[str] = Column(String(127), init=False, nullable=True,  comment='username')
-    email: Mapped[str] = Column(String(255), init=False, nullable=False, comment='email')
+    email: Mapped[str] = Column(String(255), init=False, nullable=True, comment='email')
 
     password: Mapped[str] = Column(String(255), init=False, nullable=False, comment='password')
     is_active: Mapped[bool] = Column(Boolean, init=False, default=False, nullable=False, comment='deleted')

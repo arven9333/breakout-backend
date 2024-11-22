@@ -1,6 +1,9 @@
 import os
 import io
-import gdal2tiles
+try:
+    import gdal2tiles
+except:
+    pass
 
 from pathlib import Path
 
@@ -11,7 +14,6 @@ from settings import SRC_DIR
 
 from utils.file_operations import generate_uuid4_filename, create_dirs
 
-from PIL import Image
 
 MIN_ZOOM = 2
 MAX_ZOOM = 5
