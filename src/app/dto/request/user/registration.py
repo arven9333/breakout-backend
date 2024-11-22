@@ -1,7 +1,6 @@
 from dto.base import DTO
 from dataclasses import dataclass
 
-from enums.roles import UserRole
 from models.user.base import User
 from passlib.hash import bcrypt
 
