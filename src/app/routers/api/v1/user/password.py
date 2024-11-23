@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from starlette import status
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 
@@ -19,7 +20,7 @@ async def send_link(
     user = await user_service.get_user_by_email(email)
 
     if user is None:
-        return HTTPException(404, detail="User with this email hadn't registered")
+        raise HTTPException(status_code=404, detail="User with this email hadn't registered")
 
     recover = RecoverPasswordService(email)
 
