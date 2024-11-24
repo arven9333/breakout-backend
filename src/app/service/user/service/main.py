@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from enums.roles import UserRole
 from fastapi import HTTPException
 
 from dto.request.user.registration import UserCreateDTO, UserDTO, UserDBDTO, UserUpdateDTO
@@ -20,8 +20,11 @@ class UserService(UserServiceABC):
         user = await self.repo.add_user(user)
         return user
 
-    async def get_user_by_id(self, user_id: int) -> UserDTO:
-        return await self.repo.get_user_by_id(user_id)
+    async def get_user_by_id(self, user_id: int, need_exception: bool = False) -> UserDTO:
+        user = await self.repo.get_user_by_id(user_id)
+        if user is None and need_exception is True:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
 
     async def get_user_by_email(self, email: str) -> UserDTO | None:
         return await self.repo.get_user_by_email(email)
@@ -46,3 +49,27 @@ class UserService(UserServiceABC):
 
     async def update_user(self, user_update_dto: UserUpdateDTO, user_id: int) -> UserDTO:
         return await self.repo.update_user(user_update_dto, user_id)
+
+    async def check_user_role(self, user_id: int, available_roles: list[str], need_exception: bool = True):
+        user = await self.get_user_by_id(user_id, need_exception=need_exception)
+
+        if user is None:
+            return False
+
+        if user.role not in available_roles:
+            if need_exception is True:
+                raise HTTPException(status_code=403, detail="Access denied (bad privilege)")
+            return False
+        return True
+
+    async def admin_role_required(self, user_id: int):
+        roles = [UserRole.admin.value]
+        return await self.check_user_role(user_id, roles, need_exception=True)
+
+    async def premium_user_role_required(self, user_id: int):
+        roles = [UserRole.premium.value]
+        return await self.check_user_role(user_id, roles, need_exception=True)
+
+    async def no_default_role_required(self, user_id: int):
+        roles = [UserRole.premium.value]
+        return await self.check_user_role(user_id, roles, need_exception=True)

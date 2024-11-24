@@ -29,7 +29,7 @@ async def _login(
     if password is False:
         raise HTTPException(status_code=403, detail="Password wrong. Access Denied")
 
-    token = auth_service.create_jwt_token(user.id, user.email)
+    token = auth_service.create_jwt_token(user.id, creds.subject)
 
     return {
         "token": token

@@ -62,8 +62,8 @@ class MapService:
             await delete_file(MAPS_DIR / str(map['id']))
             await self.repo.delete_map(map_id)
 
-    async def get_metrics(self, status: MapStatusEnum | None = None):
-        return await self.repo.get_metrics(status=status, )
+    async def get_metrics(self, status: MapStatusEnum | None = None, user_id: int | None = None):
+        return await self.repo.get_metrics(status=status, user_id=user_id)
 
     async def update_map(self, map_id: int, status: MapStatusEnum):
         map = await self.repo.get_map_by_id(map_id)

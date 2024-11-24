@@ -2,6 +2,8 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from dependencies.map.base import MAP_SERVICE_DEP
 from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
 from dependencies.user.auth import USER_ID_DEP
+from dependencies.user.roles import ADMIN_ROLE_DEP
+from dependencies.user.user_service import USER_SERVICE_DEP
 from enums.map import MapLevelEnum, MapStatusEnum
 from scheme.request.map.base import ActionScheme
 from scheme.response.map.base import MapScheme, MapLayerScheme
@@ -9,10 +11,11 @@ from scheme.response.map.base import MapScheme, MapLayerScheme
 router = APIRouter(tags=["maps.v1.service"], prefix='/service')
 
 
-@router.post('/create', response_model=MapScheme)
+@router.post('/create', dependencies=[ADMIN_ROLE_DEP], response_model=MapScheme)
 async def _create_map(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
+
         name: str,
         status: MapStatusEnum = MapStatusEnum.hide,
 ):
@@ -25,7 +28,7 @@ async def _create_map(
     return map
 
 
-@router.post('/mapLayer/create', response_model=MapLayerScheme)
+@router.post('/mapLayer/create', dependencies=[ADMIN_ROLE_DEP], response_model=MapLayerScheme)
 async def _create_map_layer(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
@@ -54,7 +57,7 @@ async def _create_map_layer(
     return map_layer
 
 
-@router.delete('/delete')
+@router.delete('/delete', dependencies=[ADMIN_ROLE_DEP])
 async def _delete_map(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
@@ -79,7 +82,7 @@ async def _update_map(
     }
 
 
-@router.delete('/mapLayer/delete')
+@router.delete('/mapLayer/delete', dependencies=[ADMIN_ROLE_DEP])
 async def _delete_map_layer(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
@@ -91,7 +94,7 @@ async def _delete_map_layer(
     }
 
 
-@router.post('/mapLayer/update')
+@router.post('/mapLayer/update', dependencies=[ADMIN_ROLE_DEP])
 async def _update_map_layer(
         user_id: USER_ID_DEP,
         map_service: MAP_SERVICE_DEP,
@@ -106,15 +109,17 @@ async def _update_map_layer(
 @router.get('/allMetrics')
 async def _get_all_metrics(
         user_id: USER_ID_DEP,
+        user_service: USER_SERVICE_DEP,
         map_service: MAP_SERVICE_DEP,
         status: MapStatusEnum | None = None,
 ):
-    data = await map_service.get_metrics(status=status)
+    user = await user_service.get_user_by_id(user_id)
+    data = await map_service.get_metrics(status=status, user=user_id)
 
     return data
 
 
-@router.post('/actions/save')
+@router.post('/actions/save', dependencies=[ADMIN_ROLE_DEP])
 async def _save_actions(
         user_id: USER_ID_DEP,
         icon_actions_service: ICON_ACTIONS_SERVICE_DEP,

@@ -229,7 +229,7 @@ class MapServiceRepository(SQLAlchemyRepo):
             await session.execute(query)
             await session.flush()
 
-    async def get_metrics(self, status: MapStatusEnum | None = None):
+    async def get_metrics(self, status: MapStatusEnum | None = None, user_id: int | None = None):
 
         _conditions = []
         if status is not None:
