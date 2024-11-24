@@ -114,7 +114,7 @@ async def _get_all_metrics(
         status: MapStatusEnum | None = None,
 ):
     user = await user_service.get_user_by_id(user_id)
-    data = await map_service.get_metrics(status=status, user=user_id)
+    data = await map_service.get_metrics(status=status, user_id=user_id)
 
     return data
 
