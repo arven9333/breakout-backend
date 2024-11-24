@@ -84,6 +84,8 @@ ICONS_DIR = IMAGES_DIR / 'icons'
 MAPS_DIR = IMAGES_DIR / 'maps'
 
 TWITCH_LINK_OAUTH = "https://id.twitch.tv/oauth2/authorize"
+GOOGLE_LINK_OAUTH = "https://accounts.google.com/o/oauth2/auth"
+
 TWITCH_CLIENT_ID = os.getenv("TWITCH_CLIENT_ID", "some_twitch_key")
 TWITCH_SECRET = os.getenv("TWITCH_SECRET", "some_twitch_key")
 
@@ -92,9 +94,10 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "some_google_key")
 
 ENDPOINT_CALLBACK = "api/v1/user/auth/callback"
 GOOGLE_REDIRECT_URL = f"{LOCAL_HOST}/{ENDPOINT_CALLBACK}/google/handle"
+TWITCH_REDIRECT_URL = f"{LOCAL_HOST}/{ENDPOINT_CALLBACK}/twitch"
 
-TWITCH_REDIRECT_LINK = f"{TWITCH_LINK_OAUTH}?response_type=token&client_id={TWITCH_CLIENT_ID}"
-GOOGLE_REDIRECT_LINK = f"https://accounts.google.com/o/oauth2/auth?client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URL}&response_type=code&scope=openid email profile"
+TWITCH_REDIRECT_LINK = f"{TWITCH_LINK_OAUTH}?response_type=token&client_id={TWITCH_CLIENT_ID}&redirect_uri={TWITCH_REDIRECT_URL}"
+GOOGLE_REDIRECT_LINK = f"{GOOGLE_LINK_OAUTH}?client_id={GOOGLE_CLIENT_ID}&redirect_uri={GOOGLE_REDIRECT_URL}&response_type=code&scope=openid email profile"
 
 EMAIL = os.getenv("EMAIL", "your_email@gmail.com")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "your_password")
