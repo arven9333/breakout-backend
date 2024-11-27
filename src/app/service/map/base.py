@@ -50,7 +50,7 @@ class MapService:
             await delete_file(MAPS_DIR / str(map_layer['map_id']) / str(map_layer['id']))
             await self.repo.delete_map_layer(map_layer_id)
 
-    async def update_map_layer(self, center: dict, map_layer_id: int):
+    async def update_map_layer(self, center: list, map_layer_id: int):
         map_player = await self.repo.update_map_layer(center, map_layer_id)
         return map_player
 

@@ -108,12 +108,14 @@ async def _update_map_layer(
 
 @router.get('/allMetrics')
 async def _get_all_metrics(
-        user_id: USER_ID_DEP,
         user_service: USER_SERVICE_DEP,
         map_service: MAP_SERVICE_DEP,
+        user_id: USER_ID_DEP | None = None,
         status: MapStatusEnum | None = None,
 ):
-    user = await user_service.get_user_by_id(user_id)
+    if user_id is not None:
+        user = await user_service.get_user_by_id(user_id)
+
     data = await map_service.get_metrics(status=status, user_id=user_id)
 
     return data

@@ -232,7 +232,11 @@ class MapServiceRepository(SQLAlchemyRepo):
     async def get_metrics(self, status: MapStatusEnum | None = None, user_id: int | None = None):
 
         _conditions = []
-        if status is not None:
+        if user_id is None:
+            _conditions.append(
+                Map.status == MapStatusEnum.public
+            )
+        elif status is not None:
             _conditions.append(
                 Map.status == status
             )
