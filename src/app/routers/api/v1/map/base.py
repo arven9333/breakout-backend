@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from dependencies.map.base import MAP_SERVICE_DEP
 from dependencies.map.icon import ICON_ACTIONS_SERVICE_DEP
-from dependencies.user.auth import USER_ID_DEP
+from dependencies.user.auth import USER_ID_DEP, USER_ID_DEP_NOT_REQUIRED
 from dependencies.user.roles import ADMIN_ROLE_DEP
 from dependencies.user.user_service import USER_SERVICE_DEP
 from enums.map import MapLevelEnum, MapStatusEnum
@@ -110,9 +110,10 @@ async def _update_map_layer(
 async def _get_all_metrics(
         user_service: USER_SERVICE_DEP,
         map_service: MAP_SERVICE_DEP,
-        user_id: USER_ID_DEP | None = None,
+        user_id: USER_ID_DEP_NOT_REQUIRED,
         status: MapStatusEnum | None = None,
 ):
+    print("ASD", user_id)
     if user_id is not None:
         user = await user_service.get_user_by_id(user_id)
 

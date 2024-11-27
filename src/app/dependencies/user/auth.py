@@ -32,4 +32,15 @@ async def get_user_id_by_token(
     return token.user_id
 
 
+async def get_user_id_by_token_not_required(
+        authorization: str | None = Security(AUTHORIZATION_HEADER)
+) -> int | None:
+    service = await get_auth_service()
+    if not authorization:
+        return
+
+    token = service.verify_auth_token(authorization)
+
+    return token.user_id
 USER_ID_DEP = Annotated[int, Depends(get_user_id_by_token)]
+USER_ID_DEP_NOT_REQUIRED = Annotated[int, Depends(get_user_id_by_token_not_required)]

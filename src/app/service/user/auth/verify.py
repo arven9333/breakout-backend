@@ -2,11 +2,13 @@ from typing import Optional
 
 import jwt
 import logging
+
+from fastapi import HTTPException
+
 from _logging.base import setup_logging
 
 from .auth_abc import AuthBaseUseCase
 from .constants import USER_ID_KEY
-from exceptions.auth import JWTDecodeError, AuthenticationError, NoAuthToken
 from dto.response.auth import AuthToken
 
 logger = logging.getLogger(__name__)
@@ -25,7 +27,7 @@ class VerifyToken(AuthBaseUseCase):
             authorization_token: str,
     ) -> Optional[AuthToken]:
         if not authorization_token:
-            raise NoAuthToken(details="Authorisation token is absent")
+            raise HTTPException(status_code=403, detail="Authorisation token is absent")
 
         try:
             payload = jwt.decode(
@@ -44,7 +46,7 @@ class VerifyToken(AuthBaseUseCase):
                 jwt.InvalidSignatureError,
         ) as exc:
             logger.error("Error: %s", (exc, type(exc)))
-            raise JWTDecodeError(details="Invalid Authorization token: " + str(type(exc)) + str(exc))
+            raise HTTPException(status_code=403, detail="Invalid Authorization token: " + str(type(exc)) + str(exc))
 
         try:
             auth_data = AuthToken(
@@ -56,4 +58,4 @@ class VerifyToken(AuthBaseUseCase):
             return auth_data
         except (ValueError, KeyError) as exc:
             logger.error("Error: %s", exc)
-            raise AuthenticationError(details=f"Invalid Authorisation token payload: {str(exc)}")
+            raise HTTPException(status_code=403, detail=f"Invalid Authorisation token payload: {str(exc)}")

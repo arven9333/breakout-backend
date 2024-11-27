@@ -2,7 +2,7 @@ from typing import Optional
 import logging
 from _logging.base import setup_logging
 from passlib.hash import bcrypt
-
+from fastapi.exceptions import HTTPException
 from dto.response.auth import AuthToken
 from .auth_abc import AuthServiceABC
 from .create_token import CreateToken
@@ -27,7 +27,7 @@ class AuthService(AuthServiceABC):
             authorization_token: str,
     ) -> Optional[AuthToken]:
         if not authorization_token:
-            raise NoAuthToken(details="No auth token")
+            raise HTTPException(status_code=403, detail="No auth token")
         return VerifyToken(jwt_pub_key=self.jwt_pub_key, jwt_pri_key=self.jwt_pri_key)(
             authorization_token
         )
