@@ -57,6 +57,8 @@ class UserDonationRepository(SQLAlchemyRepo):
     async def get_user_donations_list(self) -> list[UserDonationDTO]:
         query = select(
             UserDonation
+        ).order_by(
+            UserDonation.order
         )
         result_donations = []
 
