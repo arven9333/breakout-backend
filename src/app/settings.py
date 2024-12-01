@@ -53,7 +53,7 @@ class ApiConfig(BaseSettings):
     BACK_PORT: int = 8000
     UVICORN_WORKERS_COUNT: int = 1
     UVICORN_LOG_LEVEL: str = 'debug'
-    UVICORN_RELOAD: bool = True
+    UVICORN_RELOAD: bool = False
 
 
 class Settings(BaseSettings):
