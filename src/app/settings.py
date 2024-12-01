@@ -103,6 +103,7 @@ EMAIL = os.getenv("EMAIL", "your_email@gmail.com")
 EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD", "your_password")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "465"))
 
+STREAMER_NAME = os.getenv("STREAMER_NAME", "arven93")
 
 if load_dotenv(str(BASE_DIR / '.env')) is False:
     raise AssertionError(f"File .env not found, search directory: {BASE_DIR / '.env'}")
