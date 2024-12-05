@@ -52,8 +52,8 @@ async def _create_icon(
     return icon
 
 
-@router.post('/list', response_model=CategoryGroupedIconsResponseScheme)
-async def _create_icon(
+@router.get('/list', response_model=CategoryGroupedIconsResponseScheme)
+async def _get_list_icons(
         user_id: USER_ID_DEP,
         icon_service: ICON_SERVICE_DEP,
 ):
