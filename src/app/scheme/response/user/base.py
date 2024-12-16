@@ -5,15 +5,15 @@ from scheme.response.user.avatar import UserAvatarScheme
 
 class UserGetSchema(BaseModel):
     id: int
-    email: str
+    email: str | None = None
     username: str
 
 
 class UserSchema(BaseModel):
     id: int
-    email: str
-    username: str
     is_active: bool
+    email: str | None = None
+    username: str | None = None
     role: str | None
     survival: str | None = None
     raids: str | None = None
@@ -21,7 +21,7 @@ class UserSchema(BaseModel):
     hours: str | None = None
     bio: str | None = None
     username_game: str | None = None
-    find_teammates: bool = False
+    find_teammates: bool | None = False
     avatar: UserAvatarScheme | None = None
 
 
