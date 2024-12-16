@@ -31,7 +31,7 @@ class User(BaseModel, TsMixin):
     password: Mapped[str] = Column(String(255), init=False, nullable=False, comment='password')
     is_active: Mapped[bool] = Column(Boolean, init=False, default=True, nullable=False, comment='deleted')
     role: Mapped[str] = Column(String(127), init=False, server_default=UserRole.default.value)
-    find_teammates: Mapped[bool] = Column(Boolean, default=False, nullable=False)
+    find_teammates: Mapped[bool] = Column(Boolean, server_default="false", default=False, nullable=False)
 
     avatar = relationship('UserAvatar', back_populates="user", uselist=False)
 
