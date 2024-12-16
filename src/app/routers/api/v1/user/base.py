@@ -50,14 +50,16 @@ async def _update_user(
 async def _update_avatar(
         user_id: USER_ID_DEP,
         user_service: USER_SERVICE_DEP,
-        user_avatar_update_scheme: UserAvatarUpdateScheme,
+        zoom: int | None = None,
+        alignment: int | None = None,
         file: UploadFile | None = None,
 ):
     user_avatar_update_dto = UserAvatarUpdateDTO(
-        **user_avatar_update_scheme.model_dump(),
+        zoom=zoom,
+        alignment=alignment,
     )
 
-    user_avatar_dto = await user_service.update_avatar(user_avatar_update_dto, user_id)
+    user_avatar_dto = await user_service.update_avatar(user_avatar_update_dto, user_id, file)
     return user_avatar_dto
 
 
@@ -65,11 +67,13 @@ async def _update_avatar(
 async def _create_avatar(
         user_id: USER_ID_DEP,
         user_service: USER_SERVICE_DEP,
-        user_avatar_create_scheme: UserAvatarCreateScheme,
+        zoom: int = 1,
+        alignment: int = 1,
         file: UploadFile = File(...),
 ):
     user_avatar_update_dto = UserAvatarCreateDTO(
-        **user_avatar_create_scheme.model_dump(),
+        zoom=zoom,
+        alignment=alignment,
         user_id=user_id,
     )
 
