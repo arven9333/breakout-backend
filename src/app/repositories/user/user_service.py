@@ -48,9 +48,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
 
             return None
 
@@ -102,9 +102,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
 
             return None
 
@@ -124,9 +124,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDBDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDBDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
 
             return None
 
@@ -148,9 +148,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDBDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDBDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
             return None
 
     async def get_user_db_by_username(self, username: str) -> UserDBDTO | None:
@@ -171,9 +171,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDBDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDBDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
             return None
 
     async def get_user_by_external_id(self, external_id: int) -> UserDTO | None:
@@ -194,9 +194,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
             return None
 
     async def get_user_db_by_subject(self, subject: str) -> UserDBDTO | None:
@@ -208,8 +208,8 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User.username == subject,
             )
         ).options(
-            selectinload(User.avatar)
-        )
+                selectinload(User.avatar)
+            )
 
         async with self.session as session:
             result = await session.execute(query)
@@ -218,9 +218,9 @@ class UserServiceRepository(SQLAlchemyRepo):
                 if avatar := user.avatar:
                     avatar = UserAvatarDTO.model_to_dto(avatar)
 
-                    user_dto = UserDBDTO.from_db_model(user)
-                    user_dto.avatar = avatar
-                    return user_dto
+                user_dto = UserDBDTO.from_db_model(user)
+                user_dto.avatar = avatar
+                return user_dto
         return None
 
     async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO) -> UserAvatarDTO:
@@ -314,6 +314,8 @@ class UserServiceRepository(SQLAlchemyRepo):
             User.id != user_id,
             User.find_teammates == True,
             *_conditions
+        ).options(
+            selectinload(User.avatar)
         )
 
         users_search_dto = []
@@ -328,6 +330,10 @@ class UserServiceRepository(SQLAlchemyRepo):
             count = result_count.scalar_one_or_none() or 0
 
             if users := result.scalars().all():
-                users_search_dto = [UserSearchDTO.from_db_model(user_search, in_party=False) for user_search in users]
+                users_search_dto = [UserSearchDTO.from_db_model(
+                    user_search,
+                    in_party=False,
+                    avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None
+                ) for user_search in users]
 
         return users_search_dto, count
