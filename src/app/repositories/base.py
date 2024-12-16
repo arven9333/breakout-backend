@@ -1,6 +1,8 @@
 from types import TracebackType
-from typing import Optional, Type
+from typing import Optional, Type, Any
 
+from sqlalchemy import func, select
+from sqlalchemy.sql.selectable import Select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 
@@ -50,3 +52,12 @@ class SQLAlchemyRepo:
         self.session: SQLAlchemyManager = SQLAlchemyManager(
             session=session
         )
+
+    @staticmethod
+    async def get_count_from_query(query: Select) -> Select[Any]:
+        stmt = select(
+            func.count(1)
+        ).select_from(
+            query.subquery()
+        )
+        return stmt

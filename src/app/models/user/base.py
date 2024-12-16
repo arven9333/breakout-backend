@@ -29,11 +29,11 @@ class User(BaseModel, TsMixin):
     hours: Mapped[str] = Column(String(255), init=False, nullable=True, comment='hours')
     email: Mapped[str] = Column(String(255), init=False, nullable=True, comment='email')
     password: Mapped[str] = Column(String(255), init=False, nullable=False, comment='password')
-    is_active: Mapped[bool] = Column(Boolean, init=False, default=False, nullable=False, comment='deleted')
+    is_active: Mapped[bool] = Column(Boolean, init=False, default=True, nullable=False, comment='deleted')
     role: Mapped[str] = Column(String(127), init=False, server_default=UserRole.default.value)
-    find_teammates: Mapped[bool] = Column(Boolean, server_default="false", default=True, nullable=False)
+    find_teammates: Mapped[bool] = Column(Boolean, default=False, nullable=False)
 
-    avatar = relationship('UserAvatar', back_populates="user")
+    avatar = relationship('UserAvatar', back_populates="user", uselist=False)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -55,4 +55,4 @@ class UserAvatar(BaseModel, TsMixin):
     zoom: Mapped[int] = Column(Integer, init=False, nullable=True, server_default="1")
     alignment: Mapped[int] = Column(Integer, init=False, nullable=True, server_default="1")
 
-    user = relationship(User, back_populates="avatar")
+    user = relationship(User, back_populates="avatar", uselist=False)

@@ -4,14 +4,15 @@ from starlette.datastructures import UploadFile
 
 from dto.request.user.avatar import UserAvatarCreateDTO, UserAvatarUpdateDTO
 from dto.response.user.avatar import UserAvatarDTO
+from dto.response.user.base import UserSearchDTO
 from enums.roles import UserRole
 from fastapi import HTTPException
 
 from dto.request.user.registration import UserCreateDTO, UserDTO, UserDBDTO, UserUpdateDTO
 from repositories.user.user_service import UserServiceRepository
 from service.user.service.service_abc import UserServiceABC
-from settings import IMAGES_DIR, AVATARS_DIR
-from utils.file_operations import save_upload_file, delete_file
+from settings import AVATARS_DIR, SRC_DIR
+from utils.file_operations import save_upload_file, delete_file, create_dirs
 
 
 @dataclass
@@ -82,7 +83,8 @@ class UserService(UserServiceABC):
         return await self.check_user_role(user_id, roles, need_exception=True)
 
     async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO, file: UploadFile) -> UserAvatarDTO:
-        path = AVATARS_DIR / str(user_create_avatar_dto.user_id)
+        extension = file.filename.rsplit('.', 1)[-1]
+        path = AVATARS_DIR / (str(user_create_avatar_dto.user_id) + '.' + extension)
 
         has_avatar = await self.get_avatar_by_user_id(user_create_avatar_dto.user_id)
 
@@ -90,10 +92,11 @@ class UserService(UserServiceABC):
             raise HTTPException(status_code=422, detail="Avatar already exists")
 
         try:
+            create_dirs(AVATARS_DIR)
             path = save_upload_file(upload_file=file, destination=path)
             user_create_avatar_dto.image = path
             avatar_dto = await self.repo.create_avatar(user_create_avatar_dto)
-        except:
+        except Exception as e:
             await delete_file(path=path)
             raise HTTPException(status_code=500, detail="Error while creating avatar")
 
@@ -101,10 +104,15 @@ class UserService(UserServiceABC):
 
     async def update_avatar(self, user_avatar_update_dto: UserAvatarUpdateDTO, user_id: int,
                             file: UploadFile | None = None) -> UserAvatarDTO:
-        path = AVATARS_DIR / str(user_id)
 
+        user_avatar_dto = await self.get_avatar_by_user_id(user_id, raise_exception=True)
+
+        path_delete = SRC_DIR / user_avatar_dto.image
         if file:
-            await delete_file(path)
+
+            extension = file.filename.rsplit('.', 1)[-1]
+            path = AVATARS_DIR / (str(user_id) + '.' + extension)
+            await delete_file(path_delete)
             path = save_upload_file(upload_file=file, destination=path)
 
             user_avatar_update_dto.image = path
@@ -126,3 +134,27 @@ class UserService(UserServiceABC):
 
         await delete_file(path)
         return await self.repo.delete_avatar(user_id)
+
+    async def search_users(
+            self,
+            user_id: int,
+            raids: str | None = None,
+            hours: str | None = None,
+            rank: str | None = None,
+            stars: str | None = None,
+            query_search: str | None = None,
+            limit: int = 100,
+            offset: int = 0,
+    ) -> tuple[list[UserSearchDTO], int]:
+
+        data, total = await self.repo.search_users(
+            user_id=user_id,
+            raids=raids,
+            hours=hours,
+            rank=rank,
+            query_search=query_search,
+            stars=stars,
+            limit=limit,
+            offset=offset,
+        )
+        return data, total

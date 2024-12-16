@@ -1,10 +1,12 @@
 import logging
 
 from sqlalchemy import select, or_, update, insert, delete
+from sqlalchemy.orm import selectinload
 
 from _logging.base import setup_logging
 from dto.request.user.avatar import UserAvatarCreateDTO, UserAvatarUpdateDTO
 from dto.response.user.avatar import UserAvatarDTO
+from dto.response.user.base import UserSearchDTO
 from models.user.base import UserAvatar
 
 from repositories.base import SQLAlchemyRepo
@@ -35,13 +37,21 @@ class UserServiceRepository(SQLAlchemyRepo):
             User
         ).where(
             User.id == user_id
+        ).options(
+            selectinload(User.avatar)
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
-            if user := result.scalar():
-                return UserDTO.from_db_model(user)
+            if user := result.scalar_one_or_none():
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
+
             return None
 
     async def get_user_by_email(self, email: str) -> UserDTO | None:
@@ -55,7 +65,7 @@ class UserServiceRepository(SQLAlchemyRepo):
 
         async with self.session as session:
             result = await session.execute(query)
-            if user := result.scalar():
+            if user := result.scalar_one_or_none():
                 return UserDTO.from_db_model(user)
             return None
 
@@ -80,14 +90,22 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User
             ).where(
                 User.username == username
+            ).options(
+                selectinload(User.avatar)
             )
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
-            if user := result.scalar():
-                return UserDTO.from_db_model(user)
+            if user := result.scalar_one_or_none():
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
+
             return None
 
     async def get_user_db_by_id(self, user_id: int) -> UserDBDTO | None:
@@ -95,13 +113,21 @@ class UserServiceRepository(SQLAlchemyRepo):
             User
         ).where(
             User.id == user_id
+        ).options(
+            selectinload(User.avatar)
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
-            if user := result.scalar():
-                return UserDBDTO.from_db_model(user)
+            if user := result.scalar_one_or_none():
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDBDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
+
             return None
 
     async def get_user_db_by_email(self, email: str) -> UserDBDTO | None:
@@ -110,14 +136,21 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User
             ).where(
                 User.email == email
+            ).options(
+                selectinload(User.avatar)
             )
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
-            if user := result.scalar():
-                return UserDBDTO.from_db_model(user)
+            if user := result.scalar_one_or_none():
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDBDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
             return None
 
     async def get_user_db_by_username(self, username: str) -> UserDBDTO | None:
@@ -126,14 +159,21 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User
             ).where(
                 User.username == username
+            ).options(
+                selectinload(User.avatar)
             )
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
-            if user := result.scalar():
-                return UserDBDTO.from_db_model(user)
+            if user := result.scalar_one_or_none():
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDBDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
             return None
 
     async def get_user_by_external_id(self, external_id: int) -> UserDTO | None:
@@ -142,6 +182,8 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User
             ).where(
                 User.external_id == external_id
+            ).options(
+                selectinload(User.avatar)
             )
         )
 
@@ -149,7 +191,12 @@ class UserServiceRepository(SQLAlchemyRepo):
             result = await session.execute(query)
 
             if user := result.scalar_one_or_none():
-                return UserDTO.from_db_model(user)
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
             return None
 
     async def get_user_db_by_subject(self, subject: str) -> UserDBDTO | None:
@@ -160,13 +207,20 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User.email == subject,
                 User.username == subject,
             )
+        ).options(
+            selectinload(User.avatar)
         )
 
         async with self.session as session:
             result = await session.execute(query)
 
             if user := result.scalar_one_or_none():
-                return UserDBDTO.from_db_model(user)
+                if avatar := user.avatar:
+                    avatar = UserAvatarDTO.model_to_dto(avatar)
+
+                    user_dto = UserDBDTO.from_db_model(user)
+                    user_dto.avatar = avatar
+                    return user_dto
         return None
 
     async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO) -> UserAvatarDTO:
@@ -224,3 +278,56 @@ class UserServiceRepository(SQLAlchemyRepo):
             if avatar := result.scalar_one_or_none():
                 return UserAvatarDTO.model_to_dto(avatar)
             return
+
+    async def search_users(
+            self,
+            user_id: int,
+            raids: str | None = None,
+            hours: str | None = None,
+            rank: str | None = None,
+            stars: str | None = None,
+            query_search: str | None = None,
+            limit: int = 100,
+            offset: int = 0,
+    ) -> tuple[list[UserSearchDTO], int]:
+        _conditions = []
+        if raids:
+            _conditions.append(User.raids == raids)
+        if hours:
+            _conditions.append(User.hours == hours)
+        if rank:
+            _conditions.append(User.rank == rank)
+        if stars:
+            _conditions.append(User.stars == stars)
+        if query_search:
+            _conditions.append(
+                or_(
+                    User.username.ilike(query_search),
+                    User.username_game.ilike(query_search),
+                    User.email.ilike(query_search),
+                    User.bio.ilike(query_search),
+                )
+            )
+        stmt = select(
+            User
+        ).where(
+            User.id != user_id,
+            User.find_teammates == True,
+            *_conditions
+        )
+
+        users_search_dto = []
+
+        stmt_count = await self.get_count_from_query(stmt)
+        stmt = stmt.limit(limit).offset(offset)
+
+        async with self.session as session:
+            result = await session.execute(stmt)
+            result_count = await self.session.execute(stmt_count)
+
+            count = result_count.scalar_one_or_none() or 0
+
+            if users := result.scalars().all():
+                users_search_dto = [UserSearchDTO.from_db_model(user_search, in_party=False) for user_search in users]
+
+        return users_search_dto, count

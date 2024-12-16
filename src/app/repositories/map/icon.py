@@ -51,7 +51,7 @@ class IconServiceRepository(SQLAlchemyRepo):
         async with self.session as session:
             result = await session.execute(query)
 
-            if icon_category := result.scalar():
+            if icon_category := result.scalar_one_or_none():
                 return IconCategoryDTO.from_db_model(icon_category)
             return None
 
@@ -67,7 +67,7 @@ class IconServiceRepository(SQLAlchemyRepo):
         async with self.session as session:
             result = await session.execute(query)
 
-            if icon_category := result.scalar():
+            if icon_category := result.scalar_one_or_none():
                 return IconCategoryDTO.from_db_model(icon_category)
             return None
 
