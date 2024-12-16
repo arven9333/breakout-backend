@@ -14,4 +14,15 @@ class UserCreateSchema(BaseModel):
         )
 
 
-
+class UserUpdateScheme(BaseModel):
+    username: str | None = None
+    password: str | None = None
+    email: str | None = None
+    external_id: str | None = None
+    survival: str | None = None
+    raids: str | None = None
+    rank: str | None = None
+    hours: str | None = None
+    bio: str | None = None
+    username_game: str | None = None
+    find_teammates: bool = False

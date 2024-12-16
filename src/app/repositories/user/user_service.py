@@ -1,8 +1,11 @@
 import logging
 
-from sqlalchemy import select, or_, update
+from sqlalchemy import select, or_, update, insert, delete
 
 from _logging.base import setup_logging
+from dto.request.user.avatar import UserAvatarCreateDTO, UserAvatarUpdateDTO
+from dto.response.user.avatar import UserAvatarDTO
+from models.user.base import UserAvatar
 
 from repositories.base import SQLAlchemyRepo
 from models.user import User
@@ -165,3 +168,59 @@ class UserServiceRepository(SQLAlchemyRepo):
             if user := result.scalar_one_or_none():
                 return UserDBDTO.from_db_model(user)
         return None
+
+    async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO) -> UserAvatarDTO:
+        stmt = insert(
+            UserAvatar
+        ).values(
+            user_create_avatar_dto.as_dict()
+        ).returning(UserAvatar)
+
+        async with self.session as session:
+            result = await session.execute(stmt)
+
+            avatar = result.scalar_one()
+
+            return UserAvatarDTO.model_to_dto(avatar)
+
+    async def get_avatar_by_user_id(self, user_id: int) -> UserAvatarDTO | None:
+        stmt = select(
+            UserAvatar
+        ).where(
+            UserAvatar.user_id == user_id
+        )
+        async with self.session as session:
+            result = await session.execute(stmt)
+
+            if avatar := result.scalar_one_or_none():
+                return UserAvatarDTO.model_to_dto(avatar)
+            return
+
+    async def update_avatar(self, user_avatar_update_dto: UserAvatarUpdateDTO, user_id: int) -> UserAvatarDTO:
+        stmt = update(
+            UserAvatar
+        ).values(
+            user_avatar_update_dto.as_dict(exclude_none=True)
+        ).returning(
+            UserAvatar
+        )
+
+        async with self.session as session:
+            result = await session.execute(stmt)
+
+            avatar = result.scalar_one()
+
+            return UserAvatarDTO.model_to_dto(avatar)
+
+    async def delete_avatar(self, user_id: int) -> UserAvatarDTO | None:
+        stmt = delete(
+            UserAvatar
+        ).where(
+            UserAvatar.user_id == user_id
+        )
+        async with self.session as session:
+            result = await session.execute(stmt)
+
+            if avatar := result.scalar_one_or_none():
+                return UserAvatarDTO.model_to_dto(avatar)
+            return

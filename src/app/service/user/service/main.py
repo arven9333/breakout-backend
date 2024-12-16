@@ -1,10 +1,17 @@
 from dataclasses import dataclass
+
+from starlette.datastructures import UploadFile
+
+from dto.request.user.avatar import UserAvatarCreateDTO, UserAvatarUpdateDTO
+from dto.response.user.avatar import UserAvatarDTO
 from enums.roles import UserRole
 from fastapi import HTTPException
 
 from dto.request.user.registration import UserCreateDTO, UserDTO, UserDBDTO, UserUpdateDTO
 from repositories.user.user_service import UserServiceRepository
 from service.user.service.service_abc import UserServiceABC
+from settings import IMAGES_DIR, AVATARS_DIR
+from utils.file_operations import save_upload_file, delete_file
 
 
 @dataclass
@@ -73,3 +80,49 @@ class UserService(UserServiceABC):
     async def no_default_role_required(self, user_id: int):
         roles = [UserRole.premium.value]
         return await self.check_user_role(user_id, roles, need_exception=True)
+
+    async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO, file: UploadFile) -> UserAvatarDTO:
+        path = AVATARS_DIR / str(user_create_avatar_dto.user_id)
+
+        has_avatar = await self.get_avatar_by_user_id(user_create_avatar_dto.user_id)
+
+        if has_avatar:
+            raise HTTPException(status_code=422, detail="Avatar already exists")
+
+        try:
+            path = save_upload_file(upload_file=file, destination=path)
+            user_create_avatar_dto.image = path
+            avatar_dto = await self.repo.create_avatar(user_create_avatar_dto)
+        except:
+            await delete_file(path=path)
+            raise HTTPException(status_code=500, detail="Error while creating avatar")
+
+        return avatar_dto
+
+    async def update_avatar(self, user_avatar_update_dto: UserAvatarUpdateDTO, user_id: int,
+                            file: UploadFile | None = None) -> UserAvatarDTO:
+        path = AVATARS_DIR / str(user_id)
+
+        if file:
+            await delete_file(path)
+            path = save_upload_file(upload_file=file, destination=path)
+
+            user_avatar_update_dto.image = path
+
+        return await self.repo.update_avatar(user_avatar_update_dto, user_id)
+
+    async def get_avatar_by_user_id(self, user_id: int, raise_exception=False) -> UserAvatarDTO | None:
+        avatar_dto = await self.repo.get_avatar_by_user_id(user_id)
+
+        if raise_exception is True and avatar_dto is None:
+            raise HTTPException(status_code=404, detail="Avatar not found")
+        return avatar_dto
+
+    async def delete_avatar(self, user_id: int):
+
+        path = AVATARS_DIR / str(user_id)
+
+        await self.get_avatar_by_user_id(user_id, raise_exception=True)
+
+        await delete_file(path)
+        return await self.repo.delete_avatar(user_id)

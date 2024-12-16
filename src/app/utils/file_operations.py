@@ -1,6 +1,4 @@
 import shutil
-from pathlib import Path
-import shutil
 import os
 from pathlib import Path
 from settings import SRC_DIR
@@ -14,12 +12,13 @@ def create_dirs(path: Path):
         os.makedirs(path)
 
 
-def save_upload_file(upload_file: UploadFile, destination: Path) -> None:
+def save_upload_file(upload_file: UploadFile, destination: Path) -> str:
     try:
         with destination.open("wb") as buffer:
             shutil.copyfileobj(upload_file.file, buffer)
     finally:
         upload_file.file.close()
+    return str(destination).split(str(SRC_DIR))[-1][1:]
 
 
 def generate_uuid4_filename(filename):

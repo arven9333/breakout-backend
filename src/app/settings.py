@@ -53,7 +53,7 @@ class ApiConfig(BaseSettings):
     BACK_PORT: int = 8000
     UVICORN_WORKERS_COUNT: int = 1
     UVICORN_LOG_LEVEL: str = 'debug'
-    UVICORN_RELOAD: bool = False
+    UVICORN_RELOAD: bool = True
 
 
 class Settings(BaseSettings):
@@ -82,6 +82,8 @@ SRC_DIR = BASE_DIR / 'src'
 IMAGES_DIR = SRC_DIR / 'images'
 ICONS_DIR = IMAGES_DIR / 'icons'
 MAPS_DIR = IMAGES_DIR / 'maps'
+
+AVATARS_DIR = IMAGES_DIR / 'avatars'
 
 TWITCH_LINK_OAUTH = "https://id.twitch.tv/oauth2/authorize"
 GOOGLE_LINK_OAUTH = "https://accounts.google.com/o/oauth2/auth"
