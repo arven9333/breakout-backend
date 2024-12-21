@@ -11,7 +11,7 @@ from dto.request.user.registration import UserUpdateDTO
 from scheme.request.user.avatar import UserAvatarCreateScheme, UserAvatarUpdateScheme
 from scheme.request.user.base import UserCreateSchema, UserUpdateScheme
 from scheme.response.user.avatar import UserAvatarScheme
-from scheme.response.user.base import UserSchema, UserSearchResponseSchema
+from scheme.response.user.base import UserSchema, UserSearchResponseSchema, UserSearchSchema
 
 router = APIRouter(tags=["user.v1.service"], prefix="/service")
 

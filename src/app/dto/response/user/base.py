@@ -21,6 +21,8 @@ class UserSearchDTO(UserDTO):
             survival=user.survival,
             hours=user.hours,
             bio=user.bio,
+            stars=user.stars,
+            damage=user.damage,
             username_game=user.username_game,
             find_teammates=user.find_teammates,
             in_party=kwargs.get("in_party", False)
