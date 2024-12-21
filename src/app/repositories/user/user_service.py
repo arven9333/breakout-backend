@@ -286,6 +286,7 @@ class UserServiceRepository(SQLAlchemyRepo):
             hours: str | None = None,
             rank: str | None = None,
             stars: str | None = None,
+            damage: str | None = None,
             query_search: str | None = None,
             limit: int = 100,
             offset: int = 0,
@@ -299,6 +300,8 @@ class UserServiceRepository(SQLAlchemyRepo):
             _conditions.append(User.rank == rank)
         if stars:
             _conditions.append(User.stars == stars)
+        if damage:
+            _conditions.append(User.damage == damage)
         if query_search:
             _conditions.append(
                 or_(

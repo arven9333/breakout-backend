@@ -26,6 +26,7 @@ class User(BaseModel, TsMixin):
     raids: Mapped[str] = Column(String(255), init=False, nullable=True, comment='raids')
     rank: Mapped[str] = Column(String(127), init=False, nullable=True, comment='rank')
     stars: Mapped[str] = Column(String(255), init=False, nullable=True, comment='stars')
+    damage: Mapped[str] = Column(String(255), init=False, nullable=True, comment='damage')
     hours: Mapped[str] = Column(String(255), init=False, nullable=True, comment='hours')
     email: Mapped[str] = Column(String(255), init=False, nullable=True, comment='email')
     password: Mapped[str] = Column(String(255), init=False, nullable=False, comment='password')

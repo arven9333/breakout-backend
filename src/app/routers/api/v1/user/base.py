@@ -126,6 +126,7 @@ async def _search_users(
         hours: str | None = None,
         rank: str | None = None,
         stars: str | None = None,
+        damage: str | None = None,
         query_search: str | None = None,
         limit: int = 100,
         offset: int = 0,
@@ -141,6 +142,7 @@ async def _search_users(
         rank=rank,
         query_search=query_search,
         stars=stars,
+        damage=damage,
         limit=limit,
         offset=offset,
     )

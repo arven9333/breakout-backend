@@ -143,6 +143,7 @@ class UserService(UserServiceABC):
             rank: str | None = None,
             stars: str | None = None,
             query_search: str | None = None,
+            damage: str | None = None,
             limit: int = 100,
             offset: int = 0,
     ) -> tuple[list[UserSearchDTO], int]:
@@ -152,6 +153,7 @@ class UserService(UserServiceABC):
             raids=raids,
             hours=hours,
             rank=rank,
+            damage=damage,
             query_search=query_search,
             stars=stars,
             limit=limit,

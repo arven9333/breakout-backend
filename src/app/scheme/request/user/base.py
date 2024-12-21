@@ -26,3 +26,5 @@ class UserUpdateScheme(BaseModel):
     bio: str | None = None
     username_game: str | None = None
     find_teammates: bool = False
+    stars: str | None = None
+    damage: str | None = None

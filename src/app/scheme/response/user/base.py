@@ -22,6 +22,8 @@ class UserSchema(BaseModel):
     bio: str | None = None
     username_game: str | None = None
     find_teammates: bool | None = False
+    stars: str | None = None
+    damage: str | None = None
     avatar: UserAvatarScheme | None = None
 
 
