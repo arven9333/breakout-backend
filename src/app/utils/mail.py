@@ -1,6 +1,9 @@
 from smtplib import SMTP_SSL
 from email.mime.text import MIMEText
 from contextlib import contextmanager
+
+from passlib.hash import bcrypt
+
 from settings import EMAIL_PASSWORD, EMAIL, EMAIL_PORT
 
 
