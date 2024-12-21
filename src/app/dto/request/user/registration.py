@@ -48,7 +48,7 @@ class UserUpdateDTO(DTO):
     rank: str | None = None
     hours: str | None = None
     bio: str | None = None
-    stars: str | None = None
+    stars: int | None = None
     damage: str | None = None
     username_game: str | None = None
     find_teammates: bool = False
@@ -66,7 +66,7 @@ class UserDTO(DTO):
     rank: str | None = None
     hours: str | None = None
     bio: str | None = None
-    stars: str | None = None,
+    stars: int | None = None,
     damage: str | None = None,
     username_game: str | None = None
     find_teammates: bool = False
@@ -105,7 +105,7 @@ class UserDBDTO(DTO):
     rank: str | None = None
     hours: str | None = None
     bio: str | None = None
-    stars: str | None = None,
+    stars: int | None = None,
     damage: str | None = None,
     username_game: str | None = None
     find_teammates: bool = False
