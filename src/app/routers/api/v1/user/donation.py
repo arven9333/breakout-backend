@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from dependencies.user.auth import USER_ID_DEP
 from dependencies.user.roles import ADMIN_ROLE_DEP
-from dependencies.user.user_service import USER_SERVICE_DEP
 from dependencies.user.donation import USER_DONATION_SERVICE_DEP
 
-from scheme.request.user.base import UserCreateSchema
 from scheme.request.user.donation import UserDonationUpdateScheme, UserDonationAddScheme
-from scheme.response.user.base import UserGetSchema
 from scheme.response.user.donation import UserDonationListResponseScheme, UserDonationScheme
 
 router = APIRouter(tags=["user.v1.donation"], prefix="/donation")

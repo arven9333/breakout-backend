@@ -4,11 +4,10 @@ from dto.request.user.donation import UserDonationAddDTO, UserDonationUpdateDTO
 from dto.response.user.donation import UserDonationDTO
 
 from repositories.user.user_donation import UserDonationRepository
-from service.user.service.service_abc import UserServiceABC
 
 
 @dataclass
-class UserDonationService(UserServiceABC):
+class UserDonationService:
     repo: UserDonationRepository
 
     async def add_user_donation(self, user_donation_add_dto: UserDonationAddDTO) -> UserDonationDTO:
@@ -19,7 +18,6 @@ class UserDonationService(UserServiceABC):
             self,
             user_donation_update_dtos: list[UserDonationUpdateDTO]
     ) -> list[UserDonationDTO]:
-
         result = []
         for user_donation_update_dto in user_donation_update_dtos:
             user_donation_id = user_donation_update_dto.id

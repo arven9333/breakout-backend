@@ -1,6 +1,8 @@
 from dataclasses import asdict, dataclass, fields
 from typing import Any, Optional
 
+from sqlalchemy.orm import MappedAsDataclass
+
 
 @dataclass
 class DTO:
@@ -24,5 +26,9 @@ class DTO:
 
     @classmethod
     def model_to_dto(cls, from_model_dt_class: dataclass, **kwargs):
-        from_dt_dict = asdict(from_model_dt_class)
+        if isinstance(from_model_dt_class, MappedAsDataclass):
+            from_dt_dict = from_model_dt_class.__dict__
+            from_dt_dict.pop("_sa_instance_state", None)
+        else:
+            from_dt_dict = asdict(from_model_dt_class)
         return cls.from_dict(from_dt_dict, **kwargs)
