@@ -1,13 +1,17 @@
 import logging
 
-from sqlalchemy import select, or_, update, insert, delete
+from sqlalchemy import select, or_, update, insert, delete, and_
 from sqlalchemy.orm import selectinload
 
 from _logging.base import setup_logging
 from dto.request.user.avatar import UserAvatarCreateDTO, UserAvatarUpdateDTO
 from dto.response.user.avatar import UserAvatarDTO
 from dto.response.user.base import UserSearchDTO
+from dto.response.user.party import UserInvitationDTO
+from enums.status import InvitationStatusEnum
+from models import UserParty
 from models.user.base import UserAvatar
+from models.user.user_party import Invitation
 
 from repositories.base import SQLAlchemyRepo
 from models.user import User
@@ -292,6 +296,13 @@ class UserServiceRepository(SQLAlchemyRepo):
             limit: int = 100,
             offset: int = 0,
     ) -> tuple[list[UserSearchDTO], int]:
+        def need_invitation(user_id: int, search_user_id: int, from_user_id: int, to_user_id: int):
+            if from_user_id == user_id and search_user_id == to_user_id:
+                return True
+            if from_user_id == search_user_id and user_id == to_user_id:
+                return True
+            return False
+
         _conditions = []
         if raids:
             _conditions.append(User.raids == raids)
@@ -314,15 +325,24 @@ class UserServiceRepository(SQLAlchemyRepo):
                     User.bio.ilike(query_search),
                 )
             )
+        stmt_invitation = select(
+            Invitation,
+        ).where(
+            or_(
+                Invitation.to_user_id == user_id,
+                Invitation.from_user_id == user_id
+            ),
+            Invitation.status != InvitationStatusEnum.canceled
+        )
         stmt = select(
-            User
+            User,
         ).where(
             User.id != user_id,
             User.find_teammates == True,
             *_conditions
         ).options(
             selectinload(User.avatar)
-        )
+        ).distinct()
 
         users_search_dto = []
 
@@ -331,15 +351,31 @@ class UserServiceRepository(SQLAlchemyRepo):
 
         async with self.session as session:
             result = await session.execute(stmt)
+            result_invitation = await session.execute(stmt_invitation)
             result_count = await self.session.execute(stmt_count)
 
+            invitations = result_invitation.scalars().all()
             count = result_count.scalar_one_or_none() or 0
 
             if users := result.scalars().all():
-                users_search_dto = [UserSearchDTO.from_db_model(
-                    user_search,
-                    in_party=False,
-                    avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None
-                ) for user_search in users]
+
+                for user_search in users:
+                    invitation = [
+                        inv for inv in invitations
+                        if need_invitation(user_id, user_search.id, inv.from_user_id, inv.to_user_id)
+                    ]
+
+                    if invitation:
+                        invitation = UserInvitationDTO.model_to_dto(invitation[0])
+                    else:
+                        invitation = None
+
+                    users_search_dto.append(
+                        UserSearchDTO.from_db_model(
+                            user_search,
+                            invitation=invitation,
+                            avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None
+                        )
+                    )
 
         return users_search_dto, count

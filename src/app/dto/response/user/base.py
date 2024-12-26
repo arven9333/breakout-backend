@@ -1,12 +1,13 @@
 from dto.request.user.registration import UserDTO
 from dataclasses import dataclass
 
+from dto.response.user.party import UserInvitationDTO
 from models import User
 
 
 @dataclass
 class UserSearchDTO(UserDTO):
-    in_party: bool = False
+    invitation: UserInvitationDTO | None = None
 
     @classmethod
     def from_db_model(cls, user: User, **kwargs):
@@ -25,6 +26,6 @@ class UserSearchDTO(UserDTO):
             damage=user.damage,
             username_game=user.username_game,
             find_teammates=user.find_teammates,
-            in_party=kwargs.get("in_party", False)
+            invitation=kwargs.get("invitation")
         )
 

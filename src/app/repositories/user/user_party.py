@@ -47,12 +47,23 @@ class UserPartyRepository(SQLAlchemyRepo):
             **invitation_add_dto.as_dict()
         ).returning(
             Invitation
+        ).options(
+            selectinload(
+                Invitation.from_user
+            ),
+            selectinload(
+                Invitation.to_user
+            )
         )
 
         async with self.session as session:
             result = await session.execute(query)
             if invitation := result.scalar_one():
-                return UserInvitationDTO.model_to_dto(invitation)
+                return UserInvitationDTO.model_to_dto(
+                    invitation,
+                    from_user=UserDTO.from_db_model(invitation.from_user),
+                    to_user=UserDTO.from_db_model(invitation.to_user),
+                )
         return
 
     async def insert_user_messages(self, user_message_add_dto: UserMessageAddDTO) -> UserMessageDTO | None:

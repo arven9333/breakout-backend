@@ -1,21 +1,8 @@
 from scheme.response.user.base import UserSchema
-from scheme.response.common import BooleanResponse, PaginationResponseScheme
-from enums.invitation import InvitationTypeEnum
-from enums.status import InvitationStatusEnum
+from scheme.response.common import PaginationResponseScheme
 
 from datetime import datetime
 from pydantic import BaseModel
-
-
-class UserInvitationScheme(BaseModel):
-    id: int
-    from_user_id: int
-    to_user_id: int
-    text: str | None
-    alias: InvitationTypeEnum
-    status: InvitationStatusEnum
-    from_user: UserSchema | None = None
-    to_user: UserSchema | None = None
 
 
 class UserMessageScheme(BaseModel):
@@ -43,10 +30,6 @@ class UserPartyScheme(BaseModel):
     from_user: UserSchema | None = None
     to_user: UserSchema | None = None
     last_message: LastUserMessageScheme | None = None
-
-
-class UserInvitationResponseScheme(PaginationResponseScheme):
-    list: list[UserInvitationScheme]
 
 
 class UserPartyResponseScheme(PaginationResponseScheme):

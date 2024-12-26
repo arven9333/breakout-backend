@@ -121,4 +121,4 @@ class UserPartyService(UserServiceABC):
         user_invitation_dto = await self.repo.get_invitation_by_users(user_id, to_user_id)
 
         if user_invitation_dto is not None:
-            raise HTTPException(status_code=401, detail="Invitation already sent")
+            raise HTTPException(status_code=429, detail="Invitation already sent")

@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
+from enums.invitation import InvitationTypeEnum
+from enums.status import InvitationStatusEnum
+from scheme.response.common import PaginationResponseScheme
 from scheme.response.user.avatar import UserAvatarScheme
 
 
@@ -27,8 +30,23 @@ class UserSchema(BaseModel):
     avatar: UserAvatarScheme | None = None
 
 
+class UserInvitationScheme(BaseModel):
+    id: int
+    from_user_id: int
+    to_user_id: int
+    text: str | None
+    alias: InvitationTypeEnum
+    status: InvitationStatusEnum
+    from_user: UserSchema | None = None
+    to_user: UserSchema | None = None
+
+
+class UserInvitationResponseScheme(PaginationResponseScheme):
+    list: list[UserInvitationScheme]
+
+
 class UserSearchSchema(UserSchema):
-    in_party: bool = False
+    invitation: UserInvitationScheme | None = None
 
 
 class UserSearchResponseSchema(BaseModel):

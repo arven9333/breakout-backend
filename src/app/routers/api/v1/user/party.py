@@ -9,9 +9,10 @@ from dependencies.user.party import USER_PARTY_SERVICE_DEP
 from dto.request.user.party import InvitationAddDTO, UserMessageAddDTO
 from enums.invitation import InvitationTypeEnum
 from enums.status import InvitationStatusEnum
+from scheme.response.user.base import UserInvitationResponseScheme, UserInvitationScheme
 
-from scheme.response.user.party import UserInvitationResponseScheme, UserMessageResponseScheme, UserPartyResponseScheme, \
-    UserPartyScheme, UserInvitationScheme, UserMessageScheme
+from scheme.response.user.party import UserMessageResponseScheme, UserPartyResponseScheme, \
+    UserPartyScheme, UserMessageScheme
 
 router = APIRouter(tags=["user.v1.chat"], prefix="/chat")
 
@@ -113,6 +114,7 @@ async def _cancel_invitation(
 @router.post('/invitations/create', response_model=UserInvitationScheme)
 async def _create_invitation(
         user_id: USER_ID_DEP,
+        text: str | None,
         to_user_id: int,
         user_service: USER_SERVICE_DEP,
         user_party_service: USER_PARTY_SERVICE_DEP,
@@ -124,6 +126,7 @@ async def _create_invitation(
         to_user_id=to_user_id,
         alias=InvitationTypeEnum.party,
         status=InvitationStatusEnum.waiting,
+        text=text,
     )
 
     invitation_dto = await user_party_service.insert_invitation(invitation_add_dto)
