@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from starlette.requests import Request
 
 from dependencies.user.auth import USER_ID_DEP
@@ -119,8 +119,10 @@ async def _create_invitation(
         user_service: USER_SERVICE_DEP,
         user_party_service: USER_PARTY_SERVICE_DEP,
 ):
-    await user_party_service.invitation_exists(user_id, to_user_id)
+    invitation = await user_party_service.get_invitation_by_users(user_id, to_user_id)
 
+    if invitation is not None:
+        raise HTTPException(status_code=429, detail="Invitation already sent")
     invitation_add_dto = InvitationAddDTO(
         from_user_id=user_id,
         to_user_id=to_user_id,

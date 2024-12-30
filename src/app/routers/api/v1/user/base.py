@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from starlette.requests import Request
 
 from dependencies.user.auth import USER_ID_DEP
+from dependencies.user.party import USER_PARTY_SERVICE_DEP
 from dependencies.user.user_service import USER_SERVICE_DEP
 from dto.request.user.avatar import UserAvatarUpdateDTO, UserAvatarCreateDTO
 from dto.request.user.registration import UserUpdateDTO
@@ -11,7 +12,7 @@ from dto.request.user.registration import UserUpdateDTO
 from scheme.request.user.avatar import UserAvatarCreateScheme, UserAvatarUpdateScheme
 from scheme.request.user.base import UserCreateSchema, UserUpdateScheme
 from scheme.response.user.avatar import UserAvatarScheme
-from scheme.response.user.base import UserSchema, UserSearchResponseSchema, UserSearchSchema
+from scheme.response.user.base import UserSchema, UserSearchResponseSchema, UserSearchSchema, UserProfileSchema
 
 router = APIRouter(tags=["user.v1.service"], prefix="/service")
 
@@ -25,18 +26,24 @@ async def _get_user_by_token(
     return user_dto
 
 
-@router.get('/getUserProfile', response_model=UserSchema)
+@router.get('/getUserProfile', response_model=UserProfileSchema)
 async def _get_user_by_token(
         user_id: USER_ID_DEP,
         user_id_target: int,
         user_service: USER_SERVICE_DEP,
+        user_party_service: USER_PARTY_SERVICE_DEP,
+
 ):
     main_user = await user_service.get_user_by_id(user_id, need_exception=True)
     if main_user.find_teammates is False:
         raise HTTPException(status_code=403, detail="User can't check others profile")
 
     user_dto = await user_service.get_user_by_id(user_id_target, need_exception=True)
-    return user_dto
+    invitation = await user_party_service.get_invitation_by_users(user_id, user_id_target)
+
+    result = user_dto.as_dict() | {"invitation": invitation}
+
+    return result
 
 
 @router.post('/create', response_model=UserSchema)

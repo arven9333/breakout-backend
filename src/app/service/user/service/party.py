@@ -80,6 +80,7 @@ class UserPartyService(UserServiceABC):
             invitation_id=invitation_id
         )
         party_dto = await self.insert_user_party(party_add_dto)
+        invitation_dto.party_id = party_dto.id
         return invitation_dto
 
     async def cancel_invitation(self, invitation_id: int):
@@ -117,8 +118,7 @@ class UserPartyService(UserServiceABC):
 
         return user_invitation_dtos, pagination
 
-    async def invitation_exists(self, user_id: int, to_user_id: int):
+    async def get_invitation_by_users(self, user_id: int, to_user_id: int) -> UserInvitationDTO | None:
         user_invitation_dto = await self.repo.get_invitation_by_users(user_id, to_user_id)
 
-        if user_invitation_dto is not None:
-            raise HTTPException(status_code=429, detail="Invitation already sent")
+        return user_invitation_dto

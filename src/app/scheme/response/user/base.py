@@ -42,6 +42,10 @@ class UserInvitationScheme(BaseModel):
     party_id: int | None = None
 
 
+class UserProfileSchema(UserSchema):
+    invitation: UserInvitationScheme | None = None
+
+
 class UserInvitationResponseScheme(PaginationResponseScheme):
     list: list[UserInvitationScheme]
 

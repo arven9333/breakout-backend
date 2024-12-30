@@ -10,11 +10,12 @@ import logging
 from sqlalchemy.orm import selectinload, joinedload
 
 from _logging.base import setup_logging
-from dto.request.user.registration import UserDTO
+from dto.request.user.registration import UserDTO, AvatarDTO
 from dto.response.base import PaginationBaseDTO
 from dto.response.user.party import UserPartyDTO, LastUserMessageDTO, UserInvitationDTO, UserInvitationGroupDTO, \
     UserMessageDTO
 from enums.status import InvitationStatusEnum
+from models import User
 
 from repositories.base import SQLAlchemyRepo
 from dto.request.user.party import UserPartyAddDTO, UserMessageAddDTO, InvitationAddDTO, UserPartyReadDTO
@@ -162,6 +163,8 @@ class UserPartyRepository(SQLAlchemyRepo):
             joinedload(UserParty.last_message),
             joinedload(UserParty.from_user),
             joinedload(UserParty.to_user),
+            joinedload(UserParty.from_user).joinedload(User.avatar),
+            joinedload(UserParty.to_user).joinedload(User.avatar)
         ).distinct()
 
         stmt_count = await self.get_count_from_query(stmt)
@@ -189,11 +192,16 @@ class UserPartyRepository(SQLAlchemyRepo):
 
                         last_message = LastUserMessageDTO.model_to_dto(last_message, is_read=is_read)
 
+                    if from_user_avatar := user_party.from_user.avatar:
+                        from_user_avatar = AvatarDTO.model_to_dto(from_user_avatar)
+                    if to_user_avatar := user_party.to_user.avatar:
+                        to_user_avatar = AvatarDTO.model_to_dto(to_user_avatar)
+
                     user_party_dto = UserPartyDTO.model_to_dto(
                         user_party,
                         last_message=last_message,
-                        from_user=UserDTO.from_db_model(user_party.from_user),
-                        to_user=UserDTO.from_db_model(user_party.to_user),
+                        from_user=UserDTO.from_db_model(user_party.from_user, avatar=from_user_avatar),
+                        to_user=UserDTO.from_db_model(user_party.to_user, avatar=to_user_avatar),
                     )
                     result_party.append(
                         user_party_dto
@@ -221,7 +229,9 @@ class UserPartyRepository(SQLAlchemyRepo):
             Invitation.status == InvitationStatusEnum.waiting,
         ).options(
             selectinload(Invitation.from_user),
-            selectinload(Invitation.to_user)
+            selectinload(Invitation.to_user),
+            selectinload(Invitation.from_user).selectinload(User.avatar),
+            selectinload(Invitation.to_user).selectinload(User.avatar),
         ).distinct()
 
         stmt_count = await self.get_count_from_query(stmt)
@@ -236,8 +246,13 @@ class UserPartyRepository(SQLAlchemyRepo):
 
             if user_invitations := result.unique().scalars().all():
                 for user_invitation in user_invitations:
-                    from_user = UserDTO.from_db_model(user_invitation.from_user)
-                    to_user = UserDTO.from_db_model(user_invitation.to_user)
+                    if from_user_avatar := user_invitation.from_user.avatar:
+                        from_user_avatar = AvatarDTO.model_to_dto(from_user_avatar)
+                    if to_user_avatar := user_invitation.to_user.avatar:
+                        to_user_avatar = AvatarDTO.model_to_dto(to_user_avatar)
+
+                    from_user = UserDTO.from_db_model(user_invitation.from_user, avatar=from_user_avatar)
+                    to_user = UserDTO.from_db_model(user_invitation.to_user, avatar=to_user_avatar)
                     user_invitation_dto = UserInvitationDTO.model_to_dto(
                         user_invitation,
                         from_user=from_user,
@@ -274,17 +289,19 @@ class UserPartyRepository(SQLAlchemyRepo):
                 return UserInvitationDTO.model_to_dto(invitation)
         return
 
-    async def get_invitation_by_users(self, user_id: int, to_user_id: int):
+    async def get_invitation_by_users(self, user_id: int, to_user_id: int) -> UserInvitationDTO | None:
         stmt = select(
             Invitation
         ).where(
             Invitation.from_user_id.in_((user_id, to_user_id)),
             Invitation.to_user_id.in_((user_id, to_user_id)),
             Invitation.status != InvitationStatusEnum.canceled,
+        ).options(
+            selectinload(Invitation.party)
         ).distinct().limit(1)
 
         async with self.session as session:
             result = await session.execute(stmt)
             if invitation := result.scalar_one_or_none():
-                return UserInvitationDTO.model_to_dto(invitation)
+                return UserInvitationDTO.model_to_dto(invitation, party_id=getattr(invitation.party, "id", None))
         return

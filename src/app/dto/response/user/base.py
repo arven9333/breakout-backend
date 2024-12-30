@@ -27,5 +27,6 @@ class UserSearchDTO(UserDTO):
             username_game=user.username_game,
             find_teammates=user.find_teammates,
             invitation=kwargs.get("invitation"),
+            avatar=kwargs.get("avatar")
         )
 

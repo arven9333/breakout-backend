@@ -1,10 +1,11 @@
 from dto.base import DTO
-from dataclasses import dataclass
 
 from models.user.base import User
 from passlib.hash import bcrypt
+from dataclasses import dataclass
 
 
+@dataclass
 class AvatarDTO(DTO):
     id: int
     user_id: int
@@ -89,6 +90,7 @@ class UserDTO(DTO):
             find_teammates=user.find_teammates,
             stars=user.stars,
             damage=user.damage,
+            avatar=kwargs.get("avatar")
         )
 
 
