@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import select, or_, update, insert, delete, and_
+from sqlalchemy import select, or_, update, insert, delete
 from sqlalchemy.orm import selectinload
 
 from _logging.base import setup_logging
@@ -9,7 +9,6 @@ from dto.response.user.avatar import UserAvatarDTO
 from dto.response.user.base import UserSearchDTO
 from dto.response.user.party import UserInvitationDTO
 from enums.status import InvitationStatusEnum
-from models import UserParty
 from models.user.base import UserAvatar
 from models.user.user_party import Invitation
 

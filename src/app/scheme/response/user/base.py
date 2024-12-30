@@ -47,6 +47,7 @@ class UserInvitationResponseScheme(PaginationResponseScheme):
 
 class UserSearchSchema(UserSchema):
     invitation: UserInvitationScheme | None = None
+    party_id: int | None = None
 
 
 class UserSearchResponseSchema(BaseModel):
