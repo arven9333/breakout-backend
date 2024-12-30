@@ -8,6 +8,7 @@ from models import User
 @dataclass
 class UserSearchDTO(UserDTO):
     invitation: UserInvitationDTO | None = None
+    party_id: int | None = None
 
     @classmethod
     def from_db_model(cls, user: User, **kwargs):
@@ -26,6 +27,7 @@ class UserSearchDTO(UserDTO):
             damage=user.damage,
             username_game=user.username_game,
             find_teammates=user.find_teammates,
-            invitation=kwargs.get("invitation")
+            invitation=kwargs.get("invitation"),
+            party_id=kwargs.get("party_id")
         )
 

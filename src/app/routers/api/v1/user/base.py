@@ -73,8 +73,10 @@ async def _update_avatar(
         user_avatar_update_scheme: UserAvatarUpdateScheme = Depends(),
         file: Optional[bytes] = File(None),
 ):
-    if file is not None:
+    if file:
         file = request._form._dict['file']
+    else:
+        file = None
 
     user_avatar_update_dto = UserAvatarUpdateDTO(
         **user_avatar_update_scheme.model_dump(),

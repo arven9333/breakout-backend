@@ -28,6 +28,7 @@ class Invitation(BaseModel, TsMixin):
                     nullable=False, init=False)
     from_user = relationship(User, foreign_keys=[from_user_id], uselist=False)
     to_user = relationship(User, foreign_keys=[to_user_id], uselist=False)
+    party = relationship("UserParty", uselist=False, back_populates="invitation")
 
 
 class UserParty(BaseModel, TsMixin):

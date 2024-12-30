@@ -109,7 +109,6 @@ class UserService(UserServiceABC):
 
         path_delete = SRC_DIR / user_avatar_dto.image
         if file:
-
             extension = file.filename.rsplit('.', 1)[-1]
             path = AVATARS_DIR / (str(user_id) + '.' + extension)
             await delete_file(path_delete)

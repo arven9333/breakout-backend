@@ -319,10 +319,10 @@ class UserServiceRepository(SQLAlchemyRepo):
         if query_search:
             _conditions.append(
                 or_(
-                    User.username.ilike(query_search),
-                    User.username_game.ilike(query_search),
-                    User.email.ilike(query_search),
-                    User.bio.ilike(query_search),
+                    User.username.ilike(f"%{query_search}%"),
+                    User.username_game.ilike(f"%{query_search}%"),
+                    User.email.ilike(f"%{query_search}%"),
+                    User.bio.ilike(f"%{query_search}%"),
                 )
             )
         stmt_invitation = select(
@@ -333,6 +333,8 @@ class UserServiceRepository(SQLAlchemyRepo):
                 Invitation.from_user_id == user_id
             ),
             Invitation.status != InvitationStatusEnum.canceled
+        ).options(
+            selectinload(Invitation.party)
         )
         stmt = select(
             User,
@@ -366,15 +368,21 @@ class UserServiceRepository(SQLAlchemyRepo):
                     ]
 
                     if invitation:
-                        invitation = UserInvitationDTO.model_to_dto(invitation[0])
+                        invitation_base = invitation[0]
+                        invitation = UserInvitationDTO.model_to_dto(invitation_base)
+
+                        if invitation_base.status == InvitationStatusEnum.accepted:
+                            party_id = invitation_base.party.id
                     else:
                         invitation = None
+                        party_id = None
 
                     users_search_dto.append(
                         UserSearchDTO.from_db_model(
                             user_search,
                             invitation=invitation,
-                            avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None
+                            avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None,
+                            party_id=party_id
                         )
                     )
 
