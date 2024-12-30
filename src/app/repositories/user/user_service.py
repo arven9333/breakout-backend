@@ -211,8 +211,8 @@ class UserServiceRepository(SQLAlchemyRepo):
                 User.username == subject,
             )
         ).options(
-                selectinload(User.avatar)
-            )
+            selectinload(User.avatar)
+        )
 
         async with self.session as session:
             result = await session.execute(query)
@@ -367,21 +367,22 @@ class UserServiceRepository(SQLAlchemyRepo):
                     ]
 
                     if invitation:
+                        party_id = None
                         invitation_base = invitation[0]
-                        invitation = UserInvitationDTO.model_to_dto(invitation_base)
 
                         if invitation_base.status == InvitationStatusEnum.accepted:
                             party_id = invitation_base.party.id
+
+                        invitation = UserInvitationDTO.model_to_dto(invitation_base, party_id=party_id)
+
                     else:
                         invitation = None
-                        party_id = None
 
                     users_search_dto.append(
                         UserSearchDTO.from_db_model(
                             user_search,
                             invitation=invitation,
                             avatar=UserAvatarDTO.model_to_dto(user_search.avatar) if user_search.avatar else None,
-                            party_id=party_id
                         )
                     )
 

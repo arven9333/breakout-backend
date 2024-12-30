@@ -39,6 +39,7 @@ class UserInvitationScheme(BaseModel):
     status: InvitationStatusEnum
     from_user: UserSchema | None = None
     to_user: UserSchema | None = None
+    party_id: int | None = None
 
 
 class UserInvitationResponseScheme(PaginationResponseScheme):
@@ -47,7 +48,6 @@ class UserInvitationResponseScheme(PaginationResponseScheme):
 
 class UserSearchSchema(UserSchema):
     invitation: UserInvitationScheme | None = None
-    party_id: int | None = None
 
 
 class UserSearchResponseSchema(BaseModel):

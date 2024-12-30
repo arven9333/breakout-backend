@@ -17,6 +17,7 @@ class UserInvitationDTO(DTO):
     status: InvitationStatusEnum
     from_user: UserDTO | None = None
     to_user: UserDTO | None = None
+    party_id: int | None = None
 
 
 @dataclass
