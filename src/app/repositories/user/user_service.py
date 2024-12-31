@@ -343,6 +343,8 @@ class UserServiceRepository(SQLAlchemyRepo):
             *_conditions
         ).options(
             selectinload(User.avatar)
+        ).order_by(
+            User.username_game
         ).distinct()
 
         users_search_dto = []
