@@ -13,7 +13,7 @@ from repositories.user.user_service import UserServiceRepository
 from service.user.service.service_abc import UserServiceABC
 from settings import AVATARS_DIR, SRC_DIR
 from utils.file_operations import save_upload_file, delete_file, create_dirs
-
+from uuid import uuid4
 
 @dataclass
 class UserService(UserServiceABC):
@@ -84,7 +84,7 @@ class UserService(UserServiceABC):
 
     async def create_avatar(self, user_create_avatar_dto: UserAvatarCreateDTO, file: UploadFile) -> UserAvatarDTO:
         extension = file.filename.rsplit('.', 1)[-1]
-        path = AVATARS_DIR / (str(user_create_avatar_dto.user_id) + '.' + extension)
+        path = AVATARS_DIR / (str(user_create_avatar_dto.user_id) + '_' + str(uuid4()) + '.' + extension)
 
         has_avatar = await self.get_avatar_by_user_id(user_create_avatar_dto.user_id)
 
@@ -110,7 +110,7 @@ class UserService(UserServiceABC):
         path_delete = SRC_DIR / user_avatar_dto.image
         if file:
             extension = file.filename.rsplit('.', 1)[-1]
-            path = AVATARS_DIR / (str(user_id) + '.' + extension)
+            path = AVATARS_DIR / (str(user_id) + '_' + str(uuid4()) + '.' + extension)
             await delete_file(path_delete)
             path = save_upload_file(upload_file=file, destination=path)
 
