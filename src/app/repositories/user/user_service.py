@@ -256,6 +256,8 @@ class UserServiceRepository(SQLAlchemyRepo):
     async def update_avatar(self, user_avatar_update_dto: UserAvatarUpdateDTO, user_id: int) -> UserAvatarDTO:
         stmt = update(
             UserAvatar
+        ).where(
+            UserAvatar.user_id == user_id
         ).values(
             user_avatar_update_dto.as_dict(exclude_none=True)
         ).returning(
